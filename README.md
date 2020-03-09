@@ -2,13 +2,13 @@
 
 此项目产生的主要原因是工作中遇到了需要在Web中展示 STEP 和 IGES 模型的场景，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或者CDN流量，转换为压缩后的gltf会比较合适。
 
-**支持输入格式：**STL/IGES/STEP
+**支持输入格式：** STL/IGES/STEP
 
-**支持输出格式：**GLB
+**支持输出格式：** GLB
 
 为此总结博客如下，本项目即采用了博客中介绍的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
-**项目状态：**研发中
+**项目状态：** 研发中
 
 ## 快速上手
 
@@ -59,9 +59,9 @@ docker-compose up -d
 
 将Ascii格式的，或者二进制格式的STL文件，统一转换为GLTF
 
-**方法：**POST
+**方法：** POST
 
-**路径：**/convert/stl
+**路径：** /convert/stl
 
 **请求参数**
 
@@ -75,9 +75,9 @@ docker-compose up -d
 
 将STEP格式的模型文件，统一转换为GLTF
 
-**方法：**POST
+**方法：** POST
 
-**路径：**/convert/stp
+**路径：** /convert/stp
 
 **请求参数**
 
@@ -91,9 +91,9 @@ docker-compose up -d
 
 将IGES格式的模型文件，统一转换为GLTF
 
-**方法：**POST
+**方法：** POST
 
-**路径：**/convert/iges
+**路径：** /convert/iges
 
 **请求参数**
 
@@ -107,9 +107,9 @@ docker-compose up -d
 
 根据 req_id 获取当前转换进度
 
-**方法：**GET
+**方法：** GET
 
-**路径：**/convert/process
+**路径：** /convert/process
 
 **请求参数**
 
@@ -179,3 +179,4 @@ docker-compose up -d
 ## 开源协议
 
 3DModelConvertToGltf is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/GitbookIO/gitbook/blob/master/LICENSE) for the full license text.
+
