@@ -3,3 +3,6 @@ redis:
     port: 6379
     password: 
     db: 1
+upload:
+    path: D:/phpStudy/WWW/github/3d-model-convert-to-gltf/uploads/
+    maxsize: 30
