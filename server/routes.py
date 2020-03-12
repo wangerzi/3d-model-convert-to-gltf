@@ -13,7 +13,7 @@ def handle(func):
     return run
 
 def setup_routes(app):
-    app.router.add_post('/convert/stp', Convert.stp)
+    app.router.add_post('/convert/stp', handle(Convert.stp))
     app.router.add_post('/convert/stl', handle(Convert.stl))
-    app.router.add_post('/convert/iges', Convert.iges)
-    app.router.add_get('/convert/process', Convert.process)
+    app.router.add_post('/convert/iges', handle(Convert.iges))
+    app.router.add_get('/convert/process', handle(Convert.process))

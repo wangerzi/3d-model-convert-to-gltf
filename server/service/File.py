@@ -1,12 +1,12 @@
 import time
 import os
 
-def saveFile(fileObj, filename, uploadPath):
-    savePath = uploadPath + str(time.time()) + '/'
-    if not os.path.exists(savePath):
-        os.makedirs(savePath)
-    saveFilePath = savePath + filename
-    with open(saveFilePath, 'wb') as f:
-        f.write(fileObj.read())
+def save_file(file_obj, filename, upload_path):
+    save_path = upload_path + str(time.time()) + '/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    save_file_path = save_path + filename
+    with open(save_file_path, 'wb') as f:
+        f.write(file_obj.read())
         f.close()
-    return saveFilePath
+    return save_file_path
