@@ -50,10 +50,10 @@ def list_item_pos(redis, name, value):
     return -1
 
 def add_to_queue(redis, req_id, json_dict):
-    # add to 3d-preview-model-waiting
-    redis.lpush(waiting_list_key, req_id)
     # add convert information
     save_convert_information(redis, req_id, json_dict)
+    # add to 3d-preview-model-waiting (after information)
+    redis.lpush(waiting_list_key, req_id)
 
 def save_convert_information(redis, req_id, json_dict):
     redis.setex(info_key_prefix + str(req_id), 86400 * 2, json.dumps(json_dict))
@@ -67,7 +67,7 @@ def get_convert_information(redis, req_id):
 
 # get waiting mission
 def get_wait_mission(redis):
-    req_id = redis.blpop(waiting_list_key)
+    _, req_id = redis.blpop(waiting_list_key)
     return req_id, get_convert_information(redis, req_id)
 
 def get_wait_mission_len(redis):
@@ -121,3 +121,6 @@ def convert_success(redis, req_id, result):
     json_dict['result'] = result
 
     return save_convert_information(redis, req_id, json_dict)
+
+########### model convert start
+########### model convert end

@@ -1,3 +1,5 @@
+app:
+    background_process_num: 3
 redis:
     host: 127.0.0.1
     port: 6379
