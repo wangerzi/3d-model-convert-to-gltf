@@ -1,5 +1,6 @@
 app:
     background_process_num: 3
+    save_upload_temp_file: 0
 redis:
     host: 127.0.0.1
     port: 6379

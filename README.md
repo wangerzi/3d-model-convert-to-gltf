@@ -6,7 +6,7 @@
 
 **支持输出格式：** GLB
 
-本项目即采用了总结博客中介绍的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
+本项目即采用了博客中总结的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
 **项目状态：** 研发中
 
@@ -14,7 +14,7 @@
 
 由于环境配置麻烦等原因，命令行模式依旧需要依赖docker，**命令行模式适合服务端简单调用**，转换过程阻塞进程同步进行，无法分布式部署增加并发量等
 
-> PS：命令行模式同步转换模型过多时，有把提供Web服务的服务器卡住的风险
+> PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
 
 ### 命令行模式
 
@@ -22,9 +22,24 @@
 
 ```shell
 convert.sh [stl|step|iges] inputpath.stl outputpath.glb
-
 ```
 
+在 `assets` 目录中，有三个测试文件 `test.stl` `test.stp` `test.igs`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果
+
+通过其他语言调用可同步判断输出文件是否存在，来判断是否转换成功，如：
+
+```php
+<?php
+$out = 'out.glb';
+$input = 'test.stl';
+$type = 'stl';
+shell_exec('convert.sh '.$type.' '.$input.' '.$out);
+if (file_exists($out)) {
+    echo "convert result:" . $out;
+} else {
+    echo "convert failed";
+}
+```
 
 ### API模式
 
@@ -53,7 +68,10 @@ docker-compose up -d
 
 ![1583754967257](assets/1583754967257.png)
 
-出于数据一致性考虑，分布式部署时建议使用一个 Redis 实例
+出于数据一致性考虑，分布式部署时可以有如下两种策略
+
+- 使用一个 Redis 实例，**并把 upload 挂载到共享磁盘上**，优点是每个服务器的转换性能都能得到发挥，不会存在堆积任务等情况，缺点是麻烦
+- 每个服务器使用本地Redis实例，优点是文件就在本地处理，部署比较简单，缺点是可能存在**某台机器任务堆积，其他机器空闲**的状况
 
 ### 接口文档
 
@@ -64,7 +82,7 @@ docker-compose up -d
     "code": 200,
     "message": "转换成功",
     "data": {
-        "req_id": '长度41的字符串'
+        "req_id": "长度41的sha1字符串"
     }
 }
 ```
@@ -206,17 +224,18 @@ docker-compose up -d
 
 处理成功的 `req_id` 放到 `3d-preview-model-convert-success` Hash表中，存放的key是全局唯一的 `req_id`，**通知成功或者重复通知多次超时后会从其中移除**，移除时会顺带删除生成的文件以及  `3d-preview-model-data-${req_id}`
 
-## 待完成需求
+## 待完成任务
 
-- [ ] 基本项目结构规划及接口设计
-- [ ] 转换及压缩代码实现
+- [x] 基本项目结构规划及接口设计
+- [x] 转换及压缩代码实现
+- [ ] 相关接口实现
 - [ ] docker镜像打包
 
 ## 参与开发
 
 首先需要了解下 [aio-http](https://aiohttp.readthedocs.io/en/stable/)，本项目就是基于此Web框架实现的
 
-本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`
+本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试
 
 简单了解下代码结构，修改完毕后提交PR即可，欢迎邮箱 admin@wj2015.com 与我讨论
 

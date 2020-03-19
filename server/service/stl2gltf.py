@@ -1,6 +1,6 @@
 import os
 
-def stl_to_gltf(binary_stl_path, out_path, is_binary):
+def stl_to_gltf(path_to_stl, out_path, is_binary):
     import struct
 
     gltf2 = '''
