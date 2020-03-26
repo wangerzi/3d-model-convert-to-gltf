@@ -1,32 +1,38 @@
-# 3DModelConvertToGltf 统一模型格式转换工具
+# 3DModelConvertToGltf - An Unified Model Format Conversion Tool
 
-此项目产生的主要原因是工作中遇到了需要**在Web中展示 STEP 和 IGES 模型的场景**，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或者CDN流量，转换为压缩后的gltf会比较合适。
+The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
-**支持输入格式：** STL/IGES/STEP
+**support input format：** STL/IGES/STEP
 
-**支持输出格式：** GLB
+**support output format：** GLB
 
-本项目即采用了博客中总结的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
+I organized my thoughts into a blog: [STEP and IGES models are converted to the web-friendly glb format](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
-**项目状态：** 研发中
+> PS: My blog is Chinese, if you are a non-Chinese native speaker, please bring a Google Translate
 
-## 快速上手
+**Project status:** coding
 
-由于环境配置麻烦等原因，命令行模式依旧需要依赖docker，**命令行模式适合服务端简单调用**，转换过程阻塞进程同步进行，无法分布式部署增加并发量等
+## Document
 
-> PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
+English|[中文](README_ZH.md)
 
-### 命令行模式
+## Quick Start
 
-下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可
+Due to the trouble of environment configuration and other reasons, the command line mode **still needs to rely on docker**. **The command line mode is suitable for simple invocation on the server side.** The conversion process blocks the processes to be synchronized and cannot be deployed in a distributed manner to increase concurrency.
+
+> PS：When there are too many simultaneous conversion models in the command line mode or a single model is too large, there is a risk that the server providing the web service is stuck
+
+### Command mode
+
+Download the `convert.sh`, Grant execute permission, execute the following instructions
 
 ```shell
 convert.sh [stl|step|iges] inputpath.stl outputpath.glb
 ```
 
-在 `assets` 目录中，有三个测试文件 `test.stl` `test.stp` `test.igs`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果
+In the `assets` directory, there are three test files `test.stl` `test.stp` `test.igs`, copy them to the project path, and follow the instructions above to see that the corresponding results are generated.
 
-通过其他语言调用可同步判断输出文件是否存在，来判断是否转换成功，如：
+By calling in other languages, you can synchronously **determine whether the output file exists** to determine whether the conversion is successful, such as:
 
 ```php
 <?php
@@ -41,127 +47,127 @@ if (file_exists($out)) {
 }
 ```
 
-### API模式
+### API mode
 
-首先，下载代码
+At the first, clone the code
 
 ```shell
 git clone https://github.com/wangerzi/3d-model-convert-to-gltf.git
 cd 3d-model-convert-to-gltf
 ```
 
-建议使用 docker-compose 运行此项目，省去环境的烦恼
+It is recommended to use docker-compose to run this project, eliminating the troubles of the environment
 
-> config/ 是默认配置，通过docker目录映射的方式影响运行，如果修改了记得重启服务
+> config/ It is **default configuration path**, which affects the operation through the docker directory mapping. If you **modify it, remember to restart the service**
 >
-> uploads/ 是上传文件和文件转换结果的目录，一般也是通过docker目录映射的方式运行
+> uploads/ It is a **directory for uploading files and file conversion results**, and it is generally run through docker directory mapping.
 
 ```shell
 docker-compose up -d
 ```
 
-默认映射到8080端口，然后就可以通过访问 http://IPAddress:8080/ 测试是否部署完成了
+Serve to port 8080 by default, and you can access http://IPAddress:8080/ to test if deployment is complete.
 
-### 简单负载示意图
+### Simple Load Diagram
 
-如果有多机负载的需求，可借助 nginx 的反向代理做一下简单的负载均衡
+If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing
 
 ![1583754967257](assets/1583754967257.png)
 
-出于数据一致性考虑，分布式部署时可以有如下两种策略
+For data consistency, there are two strategies for distributed deployment:
 
-- 使用一个 Redis 实例，**并把 upload 挂载到共享磁盘上**，优点是每个服务器的转换性能都能得到发挥，不会存在堆积任务等情况，缺点是麻烦
-- 每个服务器使用本地Redis实例，优点是文件就在本地处理，部署比较简单，缺点是可能存在**某台机器任务堆积，其他机器空闲**的状况
+- Use a Redis instance **and mount upload on a shared disk**. The advantage is that the conversion performance of each server can be brought into play, and there will be no stacking tasks. **The disadvantage is trouble.**
+- Every server uses a local Redis instance. The advantage is that the files are processed locally and the deployment is relatively simple. The disadvantage is that there **may be a stack of tasks on one machine** and other machines being idle.
 
-### 接口文档
+### API Document
 
-所有转换接口调用成功时的响应如下，`req_id` 可以通过接口获取当前队列进度
+The response when all conversion interface calls are successful is as follows,`req_id` can get the current queue progress through the interface
 
 ```json
 {
     "code": 200,
-    "message": "转换成功",
+    "message": "Transform success",
     "data": {
-        "req_id": "长度41的sha1字符串"
+        "req_id": "sha1 code length:41"
     }
 }
 ```
 
-失败时，会有如下响应
+When you fail, you will get this message:
 
 ```json
 {
     "code": 999,
-    "message": "错误信息",
+    "message": "Err information",
     "data": {}
 }
 ```
 
-考虑到分布式部署的可能，所有的接口都**不会做文件转换缓存与去重**，所以**最好将此作为内网服务**，通过业务服务端请求本项目提供的接口
+Considering the possibility of distributed deployment, all interfaces will **not perform file conversion caching and deduplication**, so **it is best to use this as an intranet service** and request the interface provided by this project through the business server
 
-#### 转换STL接口
+#### Convert STL API
 
-将Ascii格式的，或者二进制格式的STL文件，统一转换为GLTF
+Convert STL files in Ascii format or binary format to GLTF uniformly
 
-**方法：** POST
+**Method：** POST
 
-**路径：** /convert/stl
+**Path：** /convert/stl
 
-**请求参数**
+**Request params**
 
-| 参数名称       | 类型   | 必填 | 描述                                                         |
+| Param name     | Type   | Must | Description                                                  |
 | -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | 是   | 上传STL文件                                                  |
-| callback       | string | 是   | 异步钩子地址，转换完毕后，会将文件链接和附带信息传递到Hook中 |
-| customize_data | JSON   | 否   | 附带的信息，回调时会传输                                     |
+| file           | File   | Yes  | Upload STL file by form                                      |
+| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
+| customize_data | JSON   | No   | Incidental information, transmitted when callback            |
 
-#### 转换STP接口
+#### Convert STP API
 
-将STEP格式的模型文件，统一转换为GLTF
+Unified model files in STEP format to GLTF
 
-**方法：** POST
+**Method：** POST
 
-**路径：** /convert/stp
+**Path：** /convert/stp
 
-**请求参数**
+**Request Params**
 
-| 参数名称       | 类型   | 必填 | 描述                                                         |
+| Param name     | Type   | Must | Description                                                  |
 | -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | 是   | 上传STEP文件                                                 |
-| callback       | string | 是   | 异步钩子地址，转换完毕后，会将文件链接和附带信息传递到Hook中 |
-| customize_data | JSON   | 否   | 附带的信息，回调时会传输                                     |
+| file           | File   | Yes  | Upload STEP file by form                                     |
+| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
+| customize_data | JSON   | No   | Incidental information, transmitted when callback            |
 
-#### 转换IGES接口
+#### Convert IGES API
 
-将IGES格式的模型文件，统一转换为GLTF
+Convert model files in IGES format to GLTF uniformly
 
-**方法：** POST
+**Method：** POST
 
-**路径：** /convert/iges
+**Path：** /convert/iges
 
-**请求参数**
+**Request Params**
 
-| 参数名称       | 类型   | 必填 | 描述                                                         |
+| Param name     | Type   | Must | Description                                                  |
 | -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | 是   | 上传IGES文件                                                 |
-| callback       | string | 是   | 异步钩子地址，转换完毕后，会将文件链接和附带信息传递到Hook中 |
-| customize_data | text   | 否   | 附带的信息，回调时会传输（建议传JSON）                       |
+| file           | File   | Yes  | Upload IGES file by form                                     |
+| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
+| customize_data | text   | No   | Incidental information, transmitted when callback            |
 
-#### 获取转换进度
+#### Get the current conversion progress
 
-根据 req_id 获取当前转换进度
+Get the current conversion progress according to req_id
 
-**方法：** GET
+**Method：** GET
 
-**路径：** /convert/process
+**Path：** /convert/process
 
-**请求参数**
+**Request Params**
 
-| 参数名称 | 类型   | 必填   | 描述           |
-| -------- | ------ | ------ | -------------- |
-| req_id   | string | 转换id | 转换时返回的id |
+| Param name | Type   | Must       | Description                          |
+| ---------- | ------ | ---------- | ------------------------------------ |
+| req_id     | string | convert id | response when you access convert api |
 
-**响应样例**
+**Response format**
 
 ```json
 {
@@ -174,28 +180,28 @@ docker-compose up -d
 }
 ```
 
-> status 为0表示等待中，status 为1表示转换中，status 为2表示已完成
+> status is 0 for waiting, status is 1 for conversion, status is 2 for completed
 
-### 转换回调规范
+### Conversion callback specification
 
-接口文档中提到的 callback 参数，用于转换完毕后主动调用，用于传输转换结果文件以及附带信息。
+The callback parameter mentioned in the interface document is used to actively call after the conversion is complete, and is used to transfer the conversion result file and accompanying information.
 
-为方便起见，可以在 callback 中的GET参数上拼接好模型 id，比如下面的 url 表示转换 id=1 的模型，这个 id 会随着回调的调用而被传递过去
+For convenience, the model id can be spliced on the GET parameter in the callback. For example, the following url indicates the model with the id = 1, and this id will be passed along with the callback call.
 
 > http://xxx.com/convert/callback?id=1
 
-**提供参数**
+**Response params**
 
-| 参数           | 类型    | 描述                        |
-| -------------- | ------- | --------------------------- |
-| result         | integer | 转换结果1转换失败 0转换失败 |
-| message        | string  | 错误描述                    |
-| file           | File    | 文件内容（POST表单的形式）  |
-| customize_data | text    | 请求时附带的信息            |
+| Param name     | Type    | Description                                               |
+| -------------- | ------- | --------------------------------------------------------- |
+| result         | integer | Conversion result 1 Conversion failed 0 Conversion failed |
+| message        | string  | Error Description                                         |
+| file           | File    | File content (as POST form)                               |
+| customize_data | text    | Incidental information, transmitted when callback         |
 
-**响应规范**
+**Response format**
 
-如果正常接受或者无视，请返回如下格式的JSON，并保证 code: 200
+If it is accepted or ignored normally, please return the JSON with the following format and make sure code is 200
 
 ```json
 {
@@ -203,13 +209,13 @@ docker-compose up -d
 }
 ```
 
-如果**处理失败**，请则返回**空或 JSON 中的 code 不为 200**，返回失败的数据则会以 **5/15/30/60/120 的间隔**重新推送，均失败后将丢弃不再推送
+If the **processing fails**, please **return empty or the code in the JSON is not 200**. The failed data will be **re-pushed at the interval of 5/15/30/60/120**. If both fail, it will be discarded and not pushed
 
-## Redis设计
+## Redis Desgin
 
-待处理队列统一放到 `3d-preview-model-waiting`，列表存放的是全局唯一的 `req_id`
+The pending queues in `3d-preview-model-waiting`, and the list holds the globally unique `req_id`
 
-处理中/未处理的信息都放在 `3d-preview-model-data-${req_id}` 中，value是文件属性组成的JSON，自动失效时间默认为2天，格式如下
+Processing / Unprocessed Information put in `3d-preview-model-data-${req_id}` , value is a JSON about upload file, The automatic expiration time is 2 days by default, the format is as follows:
 
 ```json
 {
@@ -224,22 +230,24 @@ docker-compose up -d
 
 处理成功的 `req_id` 放到 `3d-preview-model-convert-success` Hash表中，存放的key是全局唯一的 `req_id`，**通知成功或者重复通知多次超时后会从其中移除**，移除时会顺带删除生成的文件以及  `3d-preview-model-data-${req_id}`
 
-## 待完成任务
+The successfully processed `req_id` is placed in the `3d-preview-model-convert-success` **Hash table**, and the key stored is the globally unique `req_id`. **It will be removed from the notification after successful notification or repeated notification multiple timeouts**, and it will be deleted when it is removed Files and `3d-preview-model-data-$ {req_id}`
 
-- [x] 基本项目结构规划及接口设计
-- [x] 转换及压缩代码实现
-- [ ] 相关接口实现
-- [ ] docker镜像打包
+## Mission
 
-## 参与开发
+- [x] Basic project structure planning and interface design
+- [x] Conversion and compression code implementation
+- [ ] Related interface implementation
+- [ ] docker image packaging
 
-首先需要了解下 [aio-http](https://aiohttp.readthedocs.io/en/stable/)，本项目就是基于此Web框架实现的
+## Join us
 
-本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试
+At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on this
 
-简单了解下代码结构，修改完毕后提交PR即可，欢迎邮箱 admin@wj2015.com 与我讨论
+When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience
 
-## 开源协议
+Understand the code structure briefly, and submit the PR after the modification. Welcome to email admin@wj2015.com to discuss with me
+
+## License
 
 3DModelConvertToGltf is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/GitbookIO/gitbook/blob/master/LICENSE) for the full license text.
 
