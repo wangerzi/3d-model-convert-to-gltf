@@ -228,8 +228,6 @@ Processing / Unprocessed Information put in `3d-preview-model-data-${req_id}` , 
 }
 ```
 
-处理成功的 `req_id` 放到 `3d-preview-model-convert-success` Hash表中，存放的key是全局唯一的 `req_id`，**通知成功或者重复通知多次超时后会从其中移除**，移除时会顺带删除生成的文件以及  `3d-preview-model-data-${req_id}`
-
 The successfully processed `req_id` is placed in the `3d-preview-model-convert-success` **Hash table**, and the key stored is the globally unique `req_id`. **It will be removed from the notification after successful notification or repeated notification multiple timeouts**, and it will be deleted when it is removed Files and `3d-preview-model-data-$ {req_id}`
 
 ## Mission
@@ -241,7 +239,7 @@ The successfully processed `req_id` is placed in the `3d-preview-model-convert-s
 
 ## Join us
 
-At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on this
+At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on it
 
 When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience
 
