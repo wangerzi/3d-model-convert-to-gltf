@@ -2,7 +2,7 @@
 
 The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
-**support input format：** STL/IGES/STEP
+**support input format：** STL/IGES/STEP/OBJ
 
 **support output format：** GLB
 
@@ -234,6 +234,7 @@ The successfully processed `req_id` is placed in the `3d-preview-model-convert-s
 
 - [x] Basic project structure planning and interface design
 - [x] Conversion and compression code implementation
+- [x] Add obj format to darco gltf
 - [ ] Related interface implementation
 - [ ] docker image packaging
 
@@ -241,9 +242,9 @@ The successfully processed `req_id` is placed in the `3d-preview-model-convert-s
 
 At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on it
 
-When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience
+When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience, your local node version need `12.0.0`, or  got error when you run the `gltf-pipeline` command, and you should install `gltf-pipeline`  and  `obj2gltf` packages.
 
-Understand the code structure briefly, and submit the PR after the modification. Welcome to email admin@wj2015.com to discuss with me
+Understand the code structure briefly, and submit the PR after the modification. Welcome to email admin@wj2015.com to discuss with me.
 
 ## License
 

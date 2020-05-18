@@ -1,0 +1,28 @@
+# Blender MTL File: 'E 45 Aircraft_Export_Ready.blend'
+# Material Count: 2
+
+newmtl Material.004
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.375745
+illum 2
+map_Kd textures\E-45_glass_nor_.jpg
+map_Bump textures\\E-45_glass_nor_.jpg
+
+newmtl ship
+Ns 17.647059
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd textures\E-45 _col.jpg
+map_Bump textures\\E-45-nor_1.jpg
+map_Ks textures\\E-45 _col.jpg
+refl textures\\E-45_REF 1.jpg

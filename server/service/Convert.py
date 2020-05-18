@@ -129,7 +129,7 @@ def convert_success(redis, req_id, result):
 def convert_by_type(file_type, file_path):
     file_type = file_type.lower()
     # 1. check file_type
-    if file_type not in ['stl', 'stp', 'iges']:
+    if file_type not in ['stl', 'stp', 'iges', 'obj']:
         raise ConvertException('convert file type is not support, type:' + file_type)
     result = False
     # 1.1 check file_path
@@ -142,7 +142,8 @@ def convert_by_type(file_type, file_path):
         result = convert_stp_handler(file_path)
     elif file_type == 'iges':
         result = convert_iges_handler(file_path)
-
+    elif file_type == 'obj':
+        result = convert_obj_handler(file_path)
     return result
 
 # unified convert config
@@ -199,7 +200,9 @@ def convert_iges_handler(file_path):
     write_stl_by_shapes(shapes, convert_stl_path)
     return convert_stl_to_draco_gltf(file_path, convert_stl_path)
 
-from service.GltfPipeline import gltf_pipeline
+
+
+from service.GltfPipeline import gltf_pipeline, obj2gltf
 def convert_stl_to_draco_gltf(file_path, convert_stl_path):
     # 2. convert binary stl to gltf
     convert_gltf_path = file_path + '.glb'
@@ -217,4 +220,9 @@ def clear_file(*file_paths):
     for file_path in file_paths:
         if os.path.exists(file_path):
             os.unlink(file_path)
+def convert_obj_handler(file_path):
+    convert_gltf_path = file_path + '.glb'
+    if not obj2gltf(file_path, convert_gltf_path):
+        raise ConvertException('obj convert draco gltf fail, file:' + convert_gltf_path)
+    return convert_gltf_path
 ########### model convert end

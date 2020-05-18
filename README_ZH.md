@@ -2,7 +2,7 @@
 
 此项目产生的主要原因是工作中遇到了需要**在Web中展示 STEP 和 IGES 模型的场景**，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或者CDN流量，转换为压缩后的gltf会比较合适。
 
-**支持输入格式：** STL/IGES/STEP
+**支持输入格式：** STL/IGES/STEP/OBJ
 
 **支持输出格式：** GLB
 
@@ -232,6 +232,7 @@ docker-compose up -d
 
 - [x] 基本项目结构规划及接口设计
 - [x] 转换及压缩代码实现
+- [x] 增加 obj 的格式转换
 - [ ] 相关接口实现
 - [ ] docker镜像打包
 
@@ -239,7 +240,7 @@ docker-compose up -d
 
 首先需要了解下 [aio-http](https://aiohttp.readthedocs.io/en/stable/)，本项目就是基于此Web框架实现的
 
-本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试
+本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试，本地的 node 版本需要是 `12.0.0`，否则 `gltf-pipeline` 无法运行，需要安装 `gltf-pipeline` 和 `obj2gltf` 两个 npm 包。
 
 简单了解下代码结构，修改完毕后提交PR即可，欢迎邮箱 admin@wj2015.com 与我讨论
 
