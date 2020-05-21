@@ -12,9 +12,22 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 
 **Project status:** coding
 
+## Mission
+
+- [x] Basic project structure planning and interface design
+- [x] Conversion and compression code implementation
+- [x] Add obj format to darco gltf
+- [ ] Related interface implementation
+- [x] docker image packaging
+
+
 ## Document
 
 English|[中文](README_ZH.md)
+
+## Why not assmip
+
+I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https:/ /hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
 
 ## Quick Start
 
@@ -22,15 +35,27 @@ Due to the trouble of environment configuration and other reasons, the command l
 
 > PS：When there are too many simultaneous conversion models in the command line mode or a single model is too large, there is a risk that the server providing the web service is stuck
 
-### Command mode
+### Docker Environment
 
-Download the `convert.sh`, Grant execute permission, execute the following instructions
+Under the docker host machine  is installed with docker, run the following command to pull the image (about 4G)
 
 ```shell
-convert.sh [stl|step|iges] inputpath.stl outputpath.glb
+docker pull wj2015/3d-model-convert-to-gltf:v1.0
 ```
 
-In the `assets` directory, there are three test files `test.stl` `test.stp` `test.igs`, copy them to the project path, and follow the instructions above to see that the corresponding results are generated.
+Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` can convert model synchronous.
+
+### Command Mode(Debuging)
+
+Download the  `convert.sh`, and grant execution authority, execute the following command
+
+The script depends on the docker environment, so you should prepare the Docker environment first
+
+```shell
+convert.sh [stl|step|iges|obj] inputpath.stl outputpath.glb
+```
+
+In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj`, copy it to the project path, and you can see the convert result.
 
 By calling in other languages, you can synchronously **determine whether the output file exists** to determine whether the conversion is successful, such as:
 
@@ -47,7 +72,7 @@ if (file_exists($out)) {
 }
 ```
 
-### API mode
+### API mode(Development)
 
 At the first, clone the code
 
@@ -230,13 +255,6 @@ Processing / Unprocessed Information put in `3d-preview-model-data-${req_id}` , 
 
 The successfully processed `req_id` is placed in the `3d-preview-model-convert-success` **Hash table**, and the key stored is the globally unique `req_id`. **It will be removed from the notification after successful notification or repeated notification multiple timeouts**, and it will be deleted when it is removed Files and `3d-preview-model-data-$ {req_id}`
 
-## Mission
-
-- [x] Basic project structure planning and interface design
-- [x] Conversion and compression code implementation
-- [x] Add obj format to darco gltf
-- [ ] Related interface implementation
-- [ ] docker image packaging
 
 ## Join us
 

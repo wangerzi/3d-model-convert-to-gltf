@@ -10,9 +10,21 @@
 
 **项目状态：** 研发中
 
+## 待完成任务
+
+- [x] 基本项目结构规划及接口设计
+- [x] 转换及压缩代码实现
+- [x] 增加 obj 的格式转换
+- [ ] 相关接口实现
+- [x] docker镜像打包
+
 ## 文档
 
 中文|[English](README.md)
+
+## 为什么不用 assmip
+
+我尝试用过 `assimp`，但是在 `stl/iges/obj` 转换场景测试下结果不大理想，我使用的 [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) 打包好的环境进行测试。
 
 ## 快速上手
 
@@ -20,15 +32,27 @@
 
 > PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
 
-### 命令行模式
+### Docker运行
+
+在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
+
+```shell
+docker pull wj2015/3d-model-convert-to-gltf:v1.0
+```
+
+在 `/opt/3d-model-convert-to-gltf/server` 中执行 `conda run -n pythonocc python main.py` 可运行HTTP服务（未完成），容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` 可同步生成文件
+
+### 命令行模式（调试中）
 
 下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可
 
+脚本依赖于docker环境，所以 Docker 环境先准备好吧
+
 ```shell
-convert.sh [stl|step|iges] inputpath.stl outputpath.glb
+convert.sh [stl|step|iges|obj] inputpath.stl outputpath.glb
 ```
 
-在 `assets` 目录中，有三个测试文件 `test.stl` `test.stp` `test.igs`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果
+在 `assets` 目录中，有四个测试文件 `test.stl` `test.stp` `test.igs` `E 45 Aircraft_obj.obj`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果
 
 通过其他语言调用可同步判断输出文件是否存在，来判断是否转换成功，如：
 
@@ -45,7 +69,7 @@ if (file_exists($out)) {
 }
 ```
 
-### API模式
+### API模式（开发中）
 
 首先，下载代码
 
@@ -227,14 +251,6 @@ docker-compose up -d
 ```
 
 处理成功的 `req_id` 放到 `3d-preview-model-convert-success` Hash表中，存放的key是全局唯一的 `req_id`，**通知成功或者重复通知多次超时后会从其中移除**，移除时会顺带删除生成的文件以及  `3d-preview-model-data-${req_id}`
-
-## 待完成任务
-
-- [x] 基本项目结构规划及接口设计
-- [x] 转换及压缩代码实现
-- [x] 增加 obj 的格式转换
-- [ ] 相关接口实现
-- [ ] docker镜像打包
 
 ## 参与开发
 

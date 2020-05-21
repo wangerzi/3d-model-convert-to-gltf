@@ -1,10 +1,24 @@
-from continuumio/anaconda
+FROM continuumio/anaconda:2019.10
 LABEL maintainer=admin@wj2015.com
 
 RUN cd /opt && \
-    /opt/conda/bin/conda create -n pythonocc -c dlr-sc -c pythonocc pythonocc-core=7.4.0rc1 -y --quiet && \
-    activate pythonocc && \
-    pip install aiohttp pyaml && \
-    git clone https://github.com/wangerzi/3d-model-convert-to-gltf.git && \
-    cd 3d-model-convert-to-gltf/server && \
-CMD ['python', '/opt/3d-model-convert-to-gltf/server/main.py']
+    # if built in china, you should config this mirror
+#    /opt/conda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+#    /opt/conda/bin/conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
+#    /opt/conda/bin/conda config --set show_channel_urls yes && \
+    /opt/conda/bin/conda create -n pythonocc -c dlr-sc -c pythonocc pythonocc-core=7.4.0rc1 -y
+#    /opt/conda/bin/conda activate pythonocc
+#    git clone https://github.com/wangerzi/3d-model-convert-to-gltf.git && \
+COPY . /opt/3d-model-convert-to-gltf
+# install 12.0.0 nodejs
+RUN wget -q https://nodejs.org/download/release/v12.0.0/node-v12.0.0-linux-x64.tar.gz && \
+    tar -zxvf node-v12.0.0-linux-x64.tar.gz && rm -rf node-v12.0.0-linux-x64.tar.gz
+#    ln -s bin/node /usr/local/bin/node && ln -s bin/npm /usr/local/bin/npm && chmod -R a+x /usr/local/bin &&\
+ENV PATH $PATH:/node-v12.0.0-linux-x64/bin/
+# install pip requirements
+RUN cd /opt/3d-model-convert-to-gltf && \
+    conda run -n pythonocc pip install -r server/requirements.txt && \
+    npm install -g gltf-pipeline obj2gltf && \
+    apt update && apt-get install -y libgl1-mesa-dev && rm -rf /var/cache/apt apt-get clean
+WORKDIR /opt/3d-model-convert-to-gltf
+# CMD ['python', '/opt/3d-model-convert-to-gltf/server/main.py']
