@@ -17,6 +17,7 @@
 - [x] 增加 obj 的格式转换
 - [ ] 相关接口实现
 - [x] docker镜像打包
+- [x] 一键转换脚本封装
 
 ## 文档
 
@@ -32,6 +33,24 @@
 
 > PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
 
+## 配置说明
+
+下列为默认配置 `server/config/app.yaml` ，请按需更改，如果使用docker需要映射配置文件
+
+```yaml
+app:
+    background_process_num: 3 # 后台并发处理数量（仅api）
+    save_upload_temp_file: 1 # 保存临时文件（原模型文件）
+redis: # Redis 配置，仅 API
+    host: 127.0.0.1
+    port: 6379
+    password: 
+    db: 1
+upload: # 上传路径配置，仅 API
+    path: uploads/
+    maxsize: 30
+```
+
 ### Docker运行
 
 在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
@@ -42,7 +61,7 @@ docker pull wj2015/3d-model-convert-to-gltf:v1.0
 
 在 `/opt/3d-model-convert-to-gltf/server` 中执行 `conda run -n pythonocc python main.py` 可运行HTTP服务（未完成），容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` 可同步生成文件
 
-### 命令行模式（调试中）
+### 命令行模式
 
 下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可
 
@@ -263,4 +282,3 @@ docker-compose up -d
 ## 开源协议
 
 3DModelConvertToGltf is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/GitbookIO/gitbook/blob/master/LICENSE) for the full license text.
-

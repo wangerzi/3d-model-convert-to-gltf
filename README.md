@@ -19,6 +19,7 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [x] Add obj format to darco gltf
 - [ ] Related interface implementation
 - [x] docker image packaging
+- [x] write easy to use convert.sh
 
 
 ## Document
@@ -28,6 +29,24 @@ English|[中文](README_ZH.md)
 ## Why not assmip
 
 I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https:/ /hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
+
+## Config file introduce
+
+It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
+
+```yaml
+app:
+    background_process_num: 3 # background process num (only api)
+    save_upload_temp_file: 1 # don't delete origin model file (origin model file)
+redis: # Redis config (only api)
+    host: 127.0.0.1
+    port: 6379
+    password: 
+    db: 1
+upload: # upload path (only api)
+    path: uploads/
+    maxsize: 30
+```
 
 ## Quick Start
 
@@ -45,7 +64,7 @@ docker pull wj2015/3d-model-convert-to-gltf:v1.0
 
 Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` can convert model synchronous.
 
-### Command Mode(Debuging)
+### Command Mode
 
 Download the  `convert.sh`, and grant execution authority, execute the following command
 
