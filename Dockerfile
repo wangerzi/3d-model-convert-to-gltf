@@ -1,3 +1,4 @@
+# docker build -t wj2015/3d-model-convert-to-gltf:v1.1
 FROM continuumio/anaconda:2019.10
 LABEL maintainer=admin@wj2015.com
 
