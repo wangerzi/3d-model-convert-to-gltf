@@ -2,7 +2,7 @@
 
 此项目产生的主要原因是工作中遇到了需要**在Web中展示 STEP 和 IGES 模型的场景**，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或者CDN流量，转换为压缩后的gltf会比较合适。
 
-**支持输入格式：** STL/IGES/STEP/OBJ
+**支持输入格式：** STL/IGES/STEP/OBJ/FBX
 
 **支持输出格式：** GLB
 
@@ -59,7 +59,7 @@ upload: # 上传路径配置，仅 API
 docker pull wj2015/3d-model-convert-to-gltf:v1.0
 ```
 
-在 `/opt/3d-model-convert-to-gltf/server` 中执行 `conda run -n pythonocc python main.py` 可运行HTTP服务（未完成），容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` 可同步生成文件
+在 `/opt/3d-model-convert-to-gltf/server` 中执行 `conda run -n pythonocc python main.py` 可运行HTTP服务（未完成），容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` 可同步生成文件
 
 ### 命令行模式
 
@@ -68,10 +68,19 @@ docker pull wj2015/3d-model-convert-to-gltf:v1.0
 脚本依赖于docker环境，所以 Docker 环境先准备好吧
 
 ```shell
-convert.sh [stl|step|iges|obj] inputpath.stl outputpath.glb
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb
 ```
 
-在 `assets` 目录中，有四个测试文件 `test.stl` `test.stp` `test.igs` `E 45 Aircraft_obj.obj`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果
+在 `assets` 目录中，有五个测试文件 `test.stl` `test.stp` `test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果。
+
+> 如果在运行过程中遇到如下错误，可以执行如下指令，将其他语言执行器对应用户加到 docker 用户组中。
+>
+> > usermod -a -G docker nginx
+> >
+> 
+> 
+> docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/create: dial unix /var/run/docker.sock: connect: permission denied.
+>
 
 通过其他语言调用可同步判断输出文件是否存在，来判断是否转换成功，如：
 

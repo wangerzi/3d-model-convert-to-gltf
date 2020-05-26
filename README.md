@@ -2,13 +2,13 @@
 
 The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
-**support input format：** STL/IGES/STEP/OBJ
+**support input format：** STL/IGES/STEP/OBJ/FBX
 
 **support output format：** GLB
 
 I organized my thoughts into a blog: [STEP and IGES models are converted to the web-friendly glb format](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
-> PS: My blog is Chinese, if you are a non-Chinese native speaker, please bring a Google Translate
+> PS: My blog is write by Chinese, if you are a non-Chinese native speaker, you should take a Google Translate tool for well.
 
 **Project status:** coding
 
@@ -62,19 +62,25 @@ Under the docker host machine  is installed with docker, run the following comma
 docker pull wj2015/3d-model-convert-to-gltf:v1.0
 ```
 
-Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj] input.stl out.glb` can convert model synchronous.
+Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
 
 ### Command Mode
 
 Download the  `convert.sh`, and grant execution authority, execute the following command
 
-The script depends on the docker environment, so you should prepare the Docker environment first
+The script depends on the docker environment, so you should prepare the Docker environment first.
 
 ```shell
-convert.sh [stl|step|iges|obj] inputpath.stl outputpath.glb
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb
 ```
 
-In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj`, copy it to the project path, and you can see the convert result.
+In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`, copy it to the project path, and you can see the convert result.
+
+> If you got this error when you use php-fpm or other language executor to execute convert.sh, you can add your execute user to docker group to avoid this problem.
+>
+> > usermod -a -G docker nginx
+>
+> docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/create: dial unix /var/run/docker.sock: connect: permission denied.
 
 By calling in other languages, you can synchronously **determine whether the output file exists** to determine whether the conversion is successful, such as:
 
