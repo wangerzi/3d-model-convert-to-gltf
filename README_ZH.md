@@ -56,7 +56,7 @@ upload: # 上传路径配置，仅 API
 在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
 
 ```shell
-docker pull wj2015/3d-model-convert-to-gltf:v1.0
+docker pull wj2015/3d-model-convert-to-gltf
 ```
 
 在 `/opt/3d-model-convert-to-gltf/server` 中执行 `conda run -n pythonocc python main.py` 可运行HTTP服务（未完成），容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` 可同步生成文件

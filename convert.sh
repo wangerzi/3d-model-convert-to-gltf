@@ -9,4 +9,4 @@ outPath=$(
   pwd
 )
 outFile=$outPath/`basename $3`
-docker run -v $inputPath:$inputPath -v $outPath:$outPath wj2015/3d-model-convert-to-gltf:v1.1 /bin/bash -c "cd $inputPath && conda run -n pythonocc python /opt/3d-model-convert-to-gltf/server/convert.py $1 $inputFile $outFile"
+docker run -v $inputPath:$inputPath -v $outPath:$outPath wj2015/3d-model-convert-to-gltf:v1.2 /bin/bash -c "cd $inputPath && conda run -n pythonocc python /opt/3d-model-convert-to-gltf/server/convert.py $1 $inputFile $outFile"

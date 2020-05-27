@@ -59,7 +59,7 @@ Due to the trouble of environment configuration and other reasons, the command l
 Under the docker host machine  is installed with docker, run the following command to pull the image (about 4G)
 
 ```shell
-docker pull wj2015/3d-model-convert-to-gltf:v1.0
+docker pull wj2015/3d-model-convert-to-gltf
 ```
 
 Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
