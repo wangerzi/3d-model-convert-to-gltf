@@ -16,6 +16,7 @@ RUN wget -q https://nodejs.org/download/release/v12.0.0/node-v12.0.0-linux-x64.t
 #    ln -s bin/node /usr/local/bin/node && ln -s bin/npm /usr/local/bin/npm && chmod -R a+x /usr/local/bin &&\
 ENV PATH $PATH:/node-v12.0.0-linux-x64/bin/
 RUN npm install -g gltf-pipeline obj2gltf fbx2gltf && \
+    ln -s /node-v12.0.0-linux-x64/lib/node_modules/fbx2gltf/bin/Linux/FBX2glTF /node-v12.0.0-linux-x64/bin/fbx2gltf && \
     apt update && apt-get install -y libgl1-mesa-dev && rm -rf /var/cache/apt apt-get clean
 COPY . /opt/3d-model-convert-to-gltf
 # install pip requirements
