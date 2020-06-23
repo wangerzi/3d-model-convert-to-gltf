@@ -1,0 +1,14 @@
+# maybe you will got some error because the api is not complete
+version: '3'
+services:
+  app:
+    image: wj2015/3d-model-convert-to-gltf
+    container_name: 3d-model-convert-to-gltf-app
+    volumes:
+      - ../:/opt/3d-model-convert-to-gltf:cached
+    privileged: true
+    command:
+      'conda run -n pythonocc python server/main.py'
+  redis:
+    image: redis
+    container_name: 3d-model-convert-to-gltf-redis

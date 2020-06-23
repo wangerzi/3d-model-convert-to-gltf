@@ -1,4 +1,6 @@
-# docker build -t wj2015/3d-model-convert-to-gltf:v1.1
+# docker build -t wj2015/3d-model-convert-to-gltf:v1.3
+# you can debug by: docker run -it --rm -v `pwd`:/opt/3d-model-convert-to-gltf/ wj2015/3d-model-convert-to-gltf:latest /bin/bash
+# and run `conda activate pythonocc` to enter the environment.
 FROM continuumio/anaconda:2019.10
 LABEL maintainer=admin@wj2015.com
 

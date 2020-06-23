@@ -2,7 +2,7 @@ app:
     background_process_num: 3
     save_upload_temp_file: 1
 redis:
-    host: 127.0.0.1
+    host: 3d-model-convert-to-gltf-redis
     port: 6379
     password: 
     db: 1
