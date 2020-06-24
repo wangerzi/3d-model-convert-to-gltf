@@ -41,6 +41,7 @@
 app:
     background_process_num: 3 # 后台并发处理数量（仅api）
     save_upload_temp_file: 1 # 保存临时文件（原模型文件）
+    save_convert_temp_file: 0 # 保存转换过程文件（模型格式转换文件）
 redis: # Redis 配置，仅 API
     host: 127.0.0.1
     port: 6379
@@ -68,7 +69,8 @@ docker pull wj2015/3d-model-convert-to-gltf
 脚本依赖于docker环境，所以 Docker 环境先准备好吧
 
 ```shell
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # 生成二进制文件
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # 非仅生成二进制文件
 ```
 
 在 `assets` 目录中，有五个测试文件 `test.stl` `test.stp` `test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果。
@@ -293,7 +295,8 @@ pip install -r server/requirements.txt
 
 本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试，本地的 node 版本需要是 `12.0.0`，否则 `gltf-pipeline` 无法运行，需要安装 `gltf-pipeline` 和 `obj2gltf` 两个 npm 包。
 
-可以使用如下指令安装 `nvm`
+### 本地调试环境安装指引
+可以使用如下指令安装 `nvm`（MacOs or Linux），Windows需下载可执行文件 [https://github.com/coreybutler/nvm-windows](https://github.com/coreybutler/nvm-windows)
 ```shell script
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 ```
@@ -304,6 +307,8 @@ nvm use 12.0.0
 npm install -g gltf-pipeline obj2gltf
 ```
 再去 FBX2glTF 下载对应系统的可执行文件，放到环境变量文件夹中，地址： [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF)
+
+> PS:  为保证调用命名统一，需要将指令重命名为 fbx2gltf，否则转换 FBX 出错
 
 简单了解下代码结构，修改完毕后提交PR即可，欢迎邮箱 admin@wj2015.com 与我讨论
 

@@ -1,6 +1,7 @@
 app:
     background_process_num: 3
     save_upload_temp_file: 1
+    save_convert_temp_file: 0
 redis:
     host: 3d-model-convert-to-gltf-redis
     port: 6379

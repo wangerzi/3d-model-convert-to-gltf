@@ -9,7 +9,7 @@ The main reason for this project is that I encountered a scenario where **the ST
 
 I organized my thoughts into a blog: [STEP and IGES models are converted to the web-friendly glb format](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
-> PS: My blog is write by Chinese, if you are a non-Chinese native speaker, you should take a Google Translate tool for well.
+> PS: My blog is write by Chinese, if you are non-Chinese native speaker, you should take a Google Translate tool for well.
 
 **Project status:** coding
 
@@ -40,6 +40,7 @@ It's the default config at `server/config/app.yaml`, you can modify it as approp
 app:
     background_process_num: 3 # background process num (only api)
     save_upload_temp_file: 1 # don't delete origin model file (origin model file)
+    save_convert_temp_file: 0 # set 1 means don't delete convert temp file
 redis: # Redis config (only api)
     host: 127.0.0.1
     port: 6379
@@ -73,7 +74,8 @@ Download the  `convert.sh`, and grant execution authority, execute the following
 The script depends on the docker environment, so you should prepare the Docker environment first.
 
 ```shell
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # convert to gltf bin file
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # not only bin file
 ```
 
 In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`, copy it to the project path, and you can see the convert result.
@@ -297,7 +299,8 @@ pip install -r server/requirements.txt
 
 When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience, your local node version need `12.0.0`, or  got error when you run the `gltf-pipeline` command, and you should install `gltf-pipeline`  and  `obj2gltf` packages.
 
-Install `nvm` by this script
+### Local debug environment install guide
+Install `nvm` by this script(MacOs or Linux), you can download .exe executable file from [https://github.com/coreybutler/nvm-windows](https://github.com/coreybutler/nvm-windows) 
 ```shell script
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 ```
@@ -307,8 +310,9 @@ nvm install 12.0.0
 nvm use 12.0.0
 npm install -g gltf-pipeline obj2gltf
 ```
-Then, download FBX2GLTF from [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and put it to environment dir.
+Then, download FBX2glTf from [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and put it to environment dir.
 
+> PS: you should rename FBX2Gltf to fbx2gltf for Unified call
 
 Understand the code and the file structure, submit the PR after the modification. Welcome to email me admin@wj2015.com.
 
