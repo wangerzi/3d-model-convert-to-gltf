@@ -1,5 +1,6 @@
 # 3DModelConvertToGltf - An Unified Model Format Conversion Tool
 
+
 The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
 **support input format：** STL/IGES/STEP/OBJ/FBX
@@ -12,6 +13,11 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 
 **Project status:** coding
 
+## Document
+
+English|[中文](README_ZH.md)
+
+
 ## Mission
 
 - [x] Basic project structure planning and interface design
@@ -21,10 +27,6 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [x] docker image packaging
 - [x] write easy to use convert.sh
 
-
-## Document
-
-English|[中文](README_ZH.md)
 
 ## Why not assmip
 
@@ -285,9 +287,30 @@ The successfully processed `req_id` is placed in the `3d-preview-model-convert-s
 
 At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on it
 
+Create conda virtual environment:
+```shell script
+conda create -n 3d-model-convert-to-gltf-pythonocc -c dlr-sc -c pythonocc pythonocc-core=7.4.0rc1
+conda activate 3d-model-convert-to-gltf-pythonocc
+pip install -r server/requirements.txt
+```
+
+
 When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience, your local node version need `12.0.0`, or  got error when you run the `gltf-pipeline` command, and you should install `gltf-pipeline`  and  `obj2gltf` packages.
 
-Understand the code structure briefly, and submit the PR after the modification. Welcome to email admin@wj2015.com to discuss with me.
+Install `nvm` by this script
+```shell script
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+```
+Install and use node 12.0.0, with other packages.
+```shell script
+nvm install 12.0.0
+nvm use 12.0.0
+npm install -g gltf-pipeline obj2gltf
+```
+Then, download FBX2GLTF from [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and put it to environment dir.
+
+
+Understand the code and the file structure, submit the PR after the modification. Welcome to email me admin@wj2015.com.
 
 ## License
 

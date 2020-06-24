@@ -10,6 +10,10 @@
 
 **项目状态：** 研发中
 
+## 文档
+
+中文|[English](README.md)
+
 ## 待完成任务
 
 - [x] 基本项目结构规划及接口设计
@@ -18,10 +22,6 @@
 - [ ] 相关接口实现
 - [x] docker镜像打包
 - [x] 一键转换脚本封装
-
-## 文档
-
-中文|[English](README.md)
 
 ## 为什么不用 assmip
 
@@ -282,9 +282,28 @@ docker-compose up -d
 
 ## 参与开发
 
-首先需要了解下 [aio-http](https://aiohttp.readthedocs.io/en/stable/)，本项目就是基于此Web框架实现的
+首先需要了解下 [aio-http](https://aiohttp.readthedocs.io/en/stable/) ，本项目就是基于此Web框架实现的
+
+创建一下 conda 虚拟环境
+```shell script
+conda create -n 3d-model-convert-to-gltf-pythonocc -c dlr-sc -c pythonocc pythonocc-core=7.4.0rc1
+conda activate 3d-model-convert-to-gltf-pythonocc
+pip install -r server/requirements.txt
+```
 
 本地运行代码强烈建议进入到 `server/` 后使用 `aiohttp-devtools runserver`方便调试，本地的 node 版本需要是 `12.0.0`，否则 `gltf-pipeline` 无法运行，需要安装 `gltf-pipeline` 和 `obj2gltf` 两个 npm 包。
+
+可以使用如下指令安装 `nvm`
+```shell script
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+```
+安装 12.0.0，以及安装依赖包
+```shell script
+nvm install 12.0.0
+nvm use 12.0.0
+npm install -g gltf-pipeline obj2gltf
+```
+再去 FBX2glTF 下载对应系统的可执行文件，放到环境变量文件夹中，地址： [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF)
 
 简单了解下代码结构，修改完毕后提交PR即可，欢迎邮箱 admin@wj2015.com 与我讨论
 
