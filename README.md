@@ -1,17 +1,25 @@
 # 3DModelConvertToGltf - An Unified Model Format Conversion Tool
 
-
 The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
+
+Demo assets model effect compare:
+
+| model type | file path                | Convert time | Origin size | After size |
+| ---------- | ------------------------ | ------------ | ----------- | ---------- |
+| stl        | assets/test.stl          | 2368.890ms   | 7.6 MB      | 86 KB      |
+| iges       | assets/test.iges         | 1641.226ms   | 1 M         | 111 KB     |
+| stp        | assets/test.stp          | 2969.200ms   | 5.1 MB      | 217 KB     |
+| fbx        | assets/Samba Dancing.fbx | <1000ms      | 3.7 MB      | 614 KB     |
 
 **support input format：** STL/IGES/STEP/OBJ/FBX
 
-**support output format：** GLB
+**support output format：** GLTF/GLB
 
 I organized my thoughts into a blog: [STEP and IGES models are converted to the web-friendly glb format](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
 > PS: My blog is write by Chinese, if you are non-Chinese native speaker, you should take a Google Translate tool for well.
 
-**Project status:** coding
+**Project status:** maintain
 
 ## Document
 
@@ -23,7 +31,7 @@ English|[中文](README_ZH.md)
 - [x] Basic project structure planning and interface design
 - [x] Conversion and compression code implementation
 - [x] Add obj format to darco gltf
-- [ ] Related interface implementation
+- [x] ~~Related API implementation(not so useful, droped)~~
 - [x] docker image packaging
 - [x] write easy to use convert.sh
 
@@ -32,30 +40,34 @@ English|[中文](README_ZH.md)
 
 I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https:/ /hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
 
-## Config file introduce
+## Why not implement API in this project
 
-It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
-
-```yaml
-app:
-    background_process_num: 3 # background process num (only api)
-    save_upload_temp_file: 1 # don't delete origin model file (origin model file)
-    save_convert_temp_file: 0 # set 1 means don't delete convert temp file
-redis: # Redis config (only api)
-    host: 127.0.0.1
-    port: 6379
-    password: 
-    db: 1
-upload: # upload path (only api)
-    path: uploads/
-    maxsize: 30
-```
+Model conversion is a very performance-consuming and slow-speed service. The upload and download of the model will consume bandwidth. **If it is deployed directly on your own server, it will be a very bandwidth-intensive and CPU-consuming task**. For the most common method to upload and download large files is to **introduce OSS and CDN with dynamic expansion of queues and back-end services**, but the deployment cost and implementation cost will be relatively high, please contact admin@wj2015.com for business needs Commercial API support.
 
 ## Quick Start
 
 Due to the trouble of environment configuration and other reasons, the command line mode **still needs to rely on docker**. **The command line mode is suitable for simple invocation on the server side.** The conversion process blocks the processes to be synchronized and cannot be deployed in a distributed manner to increase concurrency.
 
 > PS：When there are too many simultaneous conversion models in the command line mode or a single model is too large, there is a risk that the server providing the web service is stuck
+
+## Config file introduce
+
+It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
+
+```yaml
+app:
+    # don't delete origin model file (origin model file)
+    save_upload_temp_file: 1
+    # set 1 means don't delete convert temp file
+    save_convert_temp_file: 0
+    # background process num (only api)
+    background_process_num: 3
+# upload path and size (only api)
+upload:
+    path: uploads/
+    # unit of storage: Mb
+    maxsize: 30
+```
 
 ### Docker Environment
 
@@ -65,7 +77,7 @@ Under the docker host machine  is installed with docker, run the following comma
 docker pull wj2015/3d-model-convert-to-gltf
 ```
 
-Inside the container  `/opt/3d-model-convert-to-gltf/server` execute `conda run -n pythonocc python main.py` to run a http server, execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
+Inside the container  and execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
 
 ### Command Mode
 
@@ -74,8 +86,8 @@ Download the  `convert.sh`, and grant execution authority, execute the following
 The script depends on the docker environment, so you should prepare the Docker environment first.
 
 ```shell
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # convert to gltf bin file
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # not only bin file
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # convert to glb single bin file
+convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # generate gltf file
 ```
 
 In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`, copy it to the project path, and you can see the convert result.
@@ -101,193 +113,56 @@ if (file_exists($out)) {
 }
 ```
 
-### API mode(Development)
-
-At the first, clone the code
-
-```shell
-git clone https://github.com/wangerzi/3d-model-convert-to-gltf.git
-cd 3d-model-convert-to-gltf
-```
-
-It is recommended to use docker-compose to run this project, eliminating the troubles of the environment
-
-> config/ It is **default configuration path**, which affects the operation through the docker directory mapping. If you **modify it, remember to restart the service**
->
-> uploads/ It is a **directory for uploading files and file conversion results**, and it is generally run through docker directory mapping.
-
-```shell
-docker-compose up -d
-```
-
-Serve to port 8080 by default, and you can access http://IPAddress:8080/ to test if deployment is complete.
-
 ### Simple Load Diagram
 
-If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing
+If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing. The HTTP API needs to implement your own logic, or contact admin@wj2015.com for a business API.
 
 ![1583754967257](assets/1583754967257.png)
 
-For data consistency, there are two strategies for distributed deployment:
-
-- Use a Redis instance **and mount upload on a shared disk**. The advantage is that the conversion performance of each server can be brought into play, and there will be no stacking tasks. **The disadvantage is trouble.**
-- Every server uses a local Redis instance. The advantage is that the files are processed locally and the deployment is relatively simple. The disadvantage is that there **may be a stack of tasks on one machine** and other machines being idle.
-
-### API Document
-
-The response when all conversion interface calls are successful is as follows,`req_id` can get the current queue progress through the interface
-
-```json
-{
-    "code": 200,
-    "message": "Transform success",
-    "data": {
-        "req_id": "sha1 code length:41"
-    }
-}
-```
-
-When you fail, you will get this message:
-
-```json
-{
-    "code": 999,
-    "message": "Err information",
-    "data": {}
-}
-```
-
-Considering the possibility of distributed deployment, all interfaces will **not perform file conversion caching and deduplication**, so **it is best to use this as an intranet service** and request the interface provided by this project through the business server
-
-#### Convert STL API
-
-Convert STL files in Ascii format or binary format to GLTF uniformly
-
-**Method：** POST
-
-**Path：** /convert/stl
-
-**Request params**
-
-| Param name     | Type   | Must | Description                                                  |
-| -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | Yes  | Upload STL file by form                                      |
-| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
-| customize_data | JSON   | No   | Incidental information, transmitted when callback            |
-
-#### Convert STP API
-
-Unified model files in STEP format to GLTF
-
-**Method：** POST
-
-**Path：** /convert/stp
-
-**Request Params**
-
-| Param name     | Type   | Must | Description                                                  |
-| -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | Yes  | Upload STEP file by form                                     |
-| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
-| customize_data | JSON   | No   | Incidental information, transmitted when callback            |
-
-#### Convert IGES API
-
-Convert model files in IGES format to GLTF uniformly
-
-**Method：** POST
-
-**Path：** /convert/iges
-
-**Request Params**
-
-| Param name     | Type   | Must | Description                                                  |
-| -------------- | ------ | ---- | ------------------------------------------------------------ |
-| file           | File   | Yes  | Upload IGES file by form                                     |
-| callback       | string | Yes  | After the conversion is complete, the file link and accompanying information are passed into the Web Hook Callback |
-| customize_data | text   | No   | Incidental information, transmitted when callback            |
-
-#### Get the current conversion progress
-
-Get the current conversion progress according to req_id
-
-**Method：** GET
-
-**Path：** /convert/process
-
-**Request Params**
-
-| Param name | Type   | Must       | Description                          |
-| ---------- | ------ | ---------- | ------------------------------------ |
-| req_id     | string | convert id | response when you access convert api |
-
-**Response format**
-
-```json
-{
-    "code": 200,
-    "data": {
-        "current": 1,
-        "total": 100,
-        "status": 0
-    }
-}
-```
-
-> status is 0 for waiting, status is 1 for conversion, status is 2 for completed
-
-### Conversion callback specification
-
-The callback parameter mentioned in the interface document is used to actively call after the conversion is complete, and is used to transfer the conversion result file and accompanying information.
-
-For convenience, the model id can be spliced on the GET parameter in the callback. For example, the following url indicates the model with the id = 1, and this id will be passed along with the callback call.
-
-> http://xxx.com/convert/callback?id=1
-
-**Response params**
-
-| Param name     | Type    | Description                                               |
-| -------------- | ------- | --------------------------------------------------------- |
-| result         | integer | Conversion result 1 Conversion failed 0 Conversion failed |
-| message        | string  | Error Description                                         |
-| file           | File    | File content (as POST form)                               |
-| customize_data | text    | Incidental information, transmitted when callback         |
-
-**Response format**
-
-If it is accepted or ignored normally, please return the JSON with the following format and make sure code is 200
-
-```json
-{
-    "code": 200
-}
-```
-
-If the **processing fails**, please **return empty or the code in the JSON is not 200**. The failed data will be **re-pushed at the interval of 5/15/30/60/120**. If both fail, it will be discarded and not pushed
-
-## Redis Desgin
-
-The pending queues in `3d-preview-model-waiting`, and the list holds the globally unique `req_id`
-
-Processing / Unprocessed Information put in `3d-preview-model-data-${req_id}` , value is a JSON about upload file, The automatic expiration time is 2 days by default, the format is as follows:
-
-```json
-{
-    "type": "stl",
-    "file": "/usr/share/nginx/html/uploads/xxx.stl",
-    "status": 1,
-    "result": {
-        "glb": "/usr/share/nginx/html/uploads/xxx.glb"
-    }
-}
-```
-
-The successfully processed `req_id` is placed in the `3d-preview-model-convert-success` **Hash table**, and the key stored is the globally unique `req_id`. **It will be removed from the notification after successful notification or repeated notification multiple timeouts**, and it will be deleted when it is removed Files and `3d-preview-model-data-$ {req_id}`
-
-
 ## Join us
 
-At first you should study [aio-http](https://aiohttp.readthedocs.io/en/stable/), this project is based on it
+### Docker development environment
+
+At first install `docker` and `docker-compose`, refer to official documents: [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+Then, enter to `environment/` documents, execute `docker-compose up`, the execute result is as follows to indicate success
+
+```shell
+user@MacBook-Pro environment % docker-compose up
+Recreating 3d-model-convert-to-gltf-app ... done
+Starting 3d-model-convert-to-gltf-redis ... done
+Attaching to 3d-model-convert-to-gltf-redis, 3d-model-convert-to-gltf-app
+3d-model-convert-to-gltf-redis | 1:C 09 Oct 2020 03:03:29.150 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+3d-model-convert-to-gltf-redis | 1:C 09 Oct 2020 03:03:29.150 # Redis version=6.0.1, bits=64, commit=00000000, modified=0, pid=1, just started
+3d-model-convert-to-gltf-redis | 1:C 09 Oct 2020 03:03:29.150 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+3d-model-convert-to-gltf-redis | 1:M 09 Oct 2020 03:03:29.152 * Running mode=standalone, port=6379.
+3d-model-convert-to-gltf-redis | 1:M 09 Oct 2020 03:03:29.152 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+3d-model-convert-to-gltf-redis | 1:M 09 Oct 2020 03:03:29.152 # Server initialized
+```
+
+If there are port conflicts, initialization failures and other abnormal situations, please check  and search the information according to the error information.
+
+Create a new terminal, execute `docker ps` for this current execute docker containers, the execute result is as follows to indicate success
+
+```shell
+user@MacBook-Pro 3d-model-convert-to-gltf % docker ps
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS               NAMES
+69b684ed7755        wj2015/3d-model-convert-to-gltf   "conda run -n python…"   3 seconds ago       Up 2 seconds                            3d-model-convert-to-gltf-app
+20eb8ede5da7        redis                             "docker-entrypoint.s…"   2 hours ago         Up 2 seconds        6379/tcp            3d-model-convert-to-gltf-redis
+```
+
+Next, enter the container to execute the command and enter the `pythonocc` conda environment. Executing the script in this environment can facilitate code changes and debugging
+
+```shell
+wangjie@MacBook-Pro 3d-model-convert-to-gltf % docker exec -it 3d-model-convert-to-gltf-app /bin/bash
+(base) root@5efd6ef96814:/opt/3d-model-convert-to-gltf# conda activate pythonocc
+(pythonocc) root@69b684ed7755:/opt/3d-model-convert-to-gltf# python server/convert.py 
+Params not found, format: python convert.py [type] [file path] [out file path]
+```
+
+### Non-docker development environment
+
+Mainly for developers who cannot run docker, you can try to use this method to build a development environment.
 
 Create conda virtual environment:
 ```shell script
@@ -297,9 +172,9 @@ pip install -r server/requirements.txt
 ```
 
 
-When you are local, I suggest you into the `server/` path, and use `aiohttp-devtools runserver` for convenience, your local node version need `12.0.0`, or  got error when you run the `gltf-pipeline` command, and you should install `gltf-pipeline`  and  `obj2gltf` packages.
+Your local node version need `12.0.0`, or  got error when you run the `gltf-pipeline` command, and you should install `gltf-pipeline`  and  `obj2gltf` packages.
 
-### Local debug environment install guide
+#### Local debug environment install guide
 Install `nvm` by this script(MacOs or Linux), you can download .exe executable file from [https://github.com/coreybutler/nvm-windows](https://github.com/coreybutler/nvm-windows) 
 ```shell script
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
@@ -312,7 +187,7 @@ npm install -g gltf-pipeline obj2gltf
 ```
 Then, download FBX2glTf from [https://github.com/facebookincubator/FBX2glTF](https://github.com/facebookincubator/FBX2glTF) and put it to environment dir.
 
-> PS: you should rename FBX2Gltf to fbx2gltf for Unified call
+> PS: you should rename FBX2Gltf to fbx2gltf for Unified invoking
 
 Understand the code and the file structure, submit the PR after the modification. Welcome to email me admin@wj2015.com.
 

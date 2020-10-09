@@ -1,12 +1,11 @@
 app:
-    background_process_num: 3
+    # don't delete origin model file (origin model file)
     save_upload_temp_file: 1
+    # set 1 means don't delete convert temp file
     save_convert_temp_file: 0
-redis:
-    host: 3d-model-convert-to-gltf-redis
-    port: 6379
-    password: 
-    db: 1
+    # background process num (only api)
+    background_process_num: 3
+# upload path and size (only api)
 upload:
     path: uploads/
     maxsize: 30
