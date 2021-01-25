@@ -38,7 +38,7 @@ English|[中文](README_ZH.md)
 
 ## Why not assmip
 
-I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https:/ /hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
+I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
 
 ## Why not implement API in this project
 
@@ -115,7 +115,7 @@ if (file_exists($out)) {
 
 ### Simple Load Diagram
 
-If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing. The HTTP API needs to implement your own logic, or contact admin@wj2015.com for a business API.
+If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing, or use message queue with producer and consumer. The HTTP API or queue needs to implement your own logic.
 
 ![1583754967257](assets/1583754967257.png)
 
