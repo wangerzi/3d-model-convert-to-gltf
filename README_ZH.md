@@ -11,7 +11,7 @@
 | stp      | assets/test.stp          | 2969.200ms | 5.1 MB | 217 KB     |
 | fbx      | assets/Samba Dancing.fbx | <1000ms    | 3.7 MB | 614 KB     |
 
-**支持输入格式：** STL/IGES/STEP/OBJ/FBX
+**支持输入格式：** STL/IGES/STP/OBJ/FBX
 
 **支持输出格式：** GLTF/GLB
 
@@ -34,7 +34,7 @@
 
 ## 为什么不用 assmip
 
-我尝试用过 `assimp`，但是在 `stl/iges/obj` 转换场景测试下结果不大理想，我使用的 [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) 打包好的环境进行测试。
+我尝试用过 [assimp](https://github.com/assimp/assimp)，但是在 `stl/iges/obj` 转换场景测试下结果不大理想，我使用的 [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) 打包好的环境进行测试，感兴趣的也可以试一试。
 
 ## 为什么不直接在本项目提供API
 
@@ -46,44 +46,19 @@
 
 > PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
 
-## 配置说明
+### 在线转换预览
 
-下列为默认配置 `server/config/app.yaml` ，请按需更改，如果使用docker需要映射配置文件
-
-```yaml
-app:
-    # 保存临时文件（原模型文件）
-    save_upload_temp_file: 1
-    # 保存转换过程文件（模型格式转换文件）
-    save_convert_temp_file: 0
-    # 后台并发处理数量（仅api）
-    background_process_num: 3
-# 上传路径配置（仅 API）
-upload:
-    path: uploads/
-    # 单位： Mb
-    maxsize: 30
-```
-
-### Docker运行
-
-在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
-
-```shell
-docker pull wj2015/3d-model-convert-to-gltf
-```
-
-在容器内执行 `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` 可同步转换文件
+可以使用 [modelbox-sdk](https://github.com/wangerzi/modelbox-sdk) 在线转换模型(<100MB)，链接：[https://wangerzi.gitee.io/modelbox-sdk/examples/index.html](https://wangerzi.gitee.io/modelbox-sdk/examples/index.html)
 
 ### 命令行模式
 
-下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可
+下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可，第二个参数可支持 `stl|stp|iges|obj|fbx`，根据文件类型而定。
 
-脚本依赖于docker环境，所以 Docker 环境先准备好吧
+> 脚本依赖于docker环境，所以 Docker 环境先准备好吧。
 
 ```shell
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # 生成二进制glb文件
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # 非单一二进制文件 gltf
+convert.sh stl inputpath.stl outputpath.glb # 生成二进制glb文件
+convert.sh stl inputpath.stl outputpath.gltf # 非单一二进制文件 gltf
 ```
 
 在 `assets` 目录中，有五个测试文件 `test.stl` `test.stp` `test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`，将其复制到项目路径下，按照上述指令执行即可看到生成了对应结果。
@@ -112,6 +87,35 @@ if (file_exists($out)) {
     echo "convert failed";
 }
 ```
+
+## 配置说明
+
+下列为默认配置 `server/config/app.yaml` ，请按需更改，如果使用docker需要映射配置文件
+
+```yaml
+app:
+    # 保存临时文件（原模型文件）
+    save_upload_temp_file: 1
+    # 保存转换过程文件（模型格式转换文件）
+    save_convert_temp_file: 0
+    # 后台并发处理数量（仅api）
+    background_process_num: 3
+# 上传路径配置（仅 API）
+upload:
+    path: uploads/
+    # 单位： Mb
+    maxsize: 30
+```
+
+### Docker运行
+
+在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
+
+```shell
+docker pull wj2015/3d-model-convert-to-gltf
+```
+
+在容器内执行 `conda run -n pythonocc python convert.py stl input.stl out.glb` 可同步转换文件
 
 ### 简单负载示意图
 

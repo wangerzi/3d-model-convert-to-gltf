@@ -1,5 +1,5 @@
-# convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf
-# convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb
+# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.gltf
+# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.glb
 inputPath=$(
   cd "$(dirname "$2")"
   pwd

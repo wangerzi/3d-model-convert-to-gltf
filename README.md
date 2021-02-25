@@ -11,7 +11,7 @@ Demo assets model effect compare:
 | stp        | assets/test.stp          | 2969.200ms   | 5.1 MB      | 217 KB     |
 | fbx        | assets/Samba Dancing.fbx | <1000ms      | 3.7 MB      | 614 KB     |
 
-**support input format：** STL/IGES/STEP/OBJ/FBX
+**support input format：** STL/IGES/STP/OBJ/FBX
 
 **support output format：** GLTF/GLB
 
@@ -38,7 +38,7 @@ English|[中文](README_ZH.md)
 
 ## Why not assmip
 
-I tried to use `assimp`, but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) docker environment for testing.
+I tried to use [assimp](https://github.com/assimp/assimp), but the result under the test of `stl/iges/obj` conversion is not good. I used [https://hub.docker.com/r/dylankenneally/assimp](https://hub.docker.com/r/dylankenneally/assimp) docker environment for testing, you can have a try on it.
 
 ## Why not implement API in this project
 
@@ -50,44 +50,19 @@ Due to the trouble of environment configuration and other reasons, the command l
 
 > PS：When there are too many simultaneous conversion models in the command line mode or a single model is too large, there is a risk that the server providing the web service is stuck
 
-## Config file introduce
+### Online convert previewer
 
-It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
-
-```yaml
-app:
-    # don't delete origin model file (origin model file)
-    save_upload_temp_file: 1
-    # set 1 means don't delete convert temp file
-    save_convert_temp_file: 0
-    # background process num (only api)
-    background_process_num: 3
-# upload path and size (only api)
-upload:
-    path: uploads/
-    # unit of storage: Mb
-    maxsize: 30
-```
-
-### Docker Environment
-
-Under the docker host machine  is installed with docker, run the following command to pull the image (about 4G)
-
-```shell
-docker pull wj2015/3d-model-convert-to-gltf
-```
-
-Inside the container  and execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
+You can convert model online (<100MB) powered by [modelbox-sdk](https://github.com/wangerzi/modelbox-sdk)，preview link: [https://wangerzi.gitee.io/modelbox-sdk/examples/index.html](https://wangerzi.gitee.io/modelbox-sdk/examples/index.html)
 
 ### Command Mode
 
-Download the  `convert.sh`, and grant execution authority, execute the following command
+Download the  `convert.sh`, and grant execution authority, execute the following command, the second param should choose in `stl|stp|iges|obj|fbx`, please determine according to the file type 
 
-The script depends on the docker environment, so you should prepare the Docker environment first.
+> The script depends on the docker environment, so you should prepare the Docker environment first.
 
 ```shell
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.glb # convert to glb single bin file
-convert.sh [stl|step|iges|obj|fbx] inputpath.stl outputpath.gltf # generate gltf file
+convert.sh stl inputpath.stl outputpath.glb # convert to glb single bin file
+convert.sh stl inputpath.stl outputpath.gltf # generate gltf file
 ```
 
 In the `assets` directory, there are four test files` test.stl` `test.stp`` test.igs` `E 45 Aircraft_obj.obj` `Samba Dancing.fbx`, copy it to the project path, and you can see the convert result.
@@ -111,6 +86,35 @@ if (file_exists($out)) {
 } else {
     echo "convert failed";
 }
+```
+
+### Docker Environment
+
+Under the docker host machine  is installed with docker, run the following command to pull the image (about 4G)
+
+```shell
+docker pull wj2015/3d-model-convert-to-gltf
+```
+
+Inside the container  and execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
+
+## Config file introduce
+
+It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
+
+```yaml
+app:
+    # don't delete origin model file (origin model file)
+    save_upload_temp_file: 1
+    # set 1 means don't delete convert temp file
+    save_convert_temp_file: 0
+    # background process num (only api)
+    background_process_num: 3
+# upload path and size (only api)
+upload:
+    path: uploads/
+    # unit of storage: Mb
+    maxsize: 30
 ```
 
 ### Simple Load Diagram
