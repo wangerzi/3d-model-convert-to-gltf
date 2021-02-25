@@ -34,6 +34,8 @@ English|[中文](README_ZH.md)
 - [x] ~~Related API implementation(not so useful, droped)~~
 - [x] docker image packaging
 - [x] write easy to use convert.sh
+- [x] online convert preview
+- [ ] [bug] stp convert to gltf is too large
 
 
 ## Why not assmip
