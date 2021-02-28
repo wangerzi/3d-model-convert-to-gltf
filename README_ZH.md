@@ -82,6 +82,7 @@ convert.sh stl inputpath.stl outputpath.gltf # 非单一二进制文件 gltf
 $out = 'out.glb';
 $input = 'test.stl';
 $type = 'stl';
+// 请注意安全，小心任意执行漏洞
 shell_exec('convert.sh '.$type.' '.$input.' '.$out);
 if (file_exists($out)) {
     echo "convert result:" . $out;

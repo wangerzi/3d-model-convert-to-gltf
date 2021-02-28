@@ -82,6 +82,7 @@ By calling in other languages, you can synchronously **determine whether the out
 $out = 'out.glb';
 $input = 'test.stl';
 $type = 'stl';
+// please be careful about execution attack
 shell_exec('convert.sh '.$type.' '.$input.' '.$out);
 if (file_exists($out)) {
     echo "convert result:" . $out;
