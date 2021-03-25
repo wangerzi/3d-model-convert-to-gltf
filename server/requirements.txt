@@ -11,7 +11,7 @@ multidict==4.7.6
 OCC==7.4.0rc1
 pyaml==20.4.0
 Pygments==2.7.1
-PyYAML==5.3.1
+PyYAML==5.4
 redis==3.5.3
 six==1.12.0
 watchgod==0.6
