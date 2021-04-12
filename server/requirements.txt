@@ -10,7 +10,7 @@ idna==2.9
 multidict==4.7.6
 OCC==7.4.0rc1
 pyaml==20.4.0
-Pygments==2.7.1
+Pygments==2.7.4
 PyYAML==5.4
 redis==3.5.3
 six==1.12.0
