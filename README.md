@@ -36,6 +36,7 @@ English|[中文](README_ZH.md)
 - [x] write easy to use convert.sh
 - [x] online convert preview
 - [ ] [bug] stp convert to gltf is too large
+- [ ] grpc support
 
 
 ## Why not assmip
