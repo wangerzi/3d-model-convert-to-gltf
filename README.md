@@ -1,5 +1,9 @@
 # 3DModelConvertToGltf - An Unified Model Format Conversion Tool
 
+## Document
+
+English|[中文](README_ZH.md)
+
 The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
 Demo assets model effect compare:
@@ -20,10 +24,6 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 > PS: My blog is write by Chinese, if you are non-Chinese native speaker, you should take a Google Translate tool for well.
 
 **Project status:** maintain
-
-## Document
-
-English|[中文](README_ZH.md)
 
 
 ## Mission

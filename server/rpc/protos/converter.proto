@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service Converter {
+    rpc convertToGltf(convertReq) returns (convertResp) {}
+}
+
+message convertReq {
+    string type = 1;
+    bytes file = 2;
+}
+message convertResp {
+    bytes file = 1;
+}

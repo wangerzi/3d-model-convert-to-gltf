@@ -1,5 +1,9 @@
 # 3DModelConvertToGltf 统一模型格式转换工具
 
+## 文档
+
+中文|[English](README.md)
+
 此项目产生的主要原因是工作中遇到了需要**在Web中展示 STEP 和 IGES 模型的场景**，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或CDN流量，转换为压缩后的gltf会比较合适。
 
 样例文件压缩效果如下表：
@@ -18,10 +22,6 @@
 本项目即采用了博客中总结的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
 **项目状态：** 维护中
-
-## 文档
-
-中文|[English](README.md)
 
 ## 待完成任务
 
