@@ -1,3 +1,4 @@
+# python -m pip install grpcio grpcio-tools
 # python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/converter.proto
 
 from concurrent import futures
@@ -15,10 +16,19 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(
+        futures.ThreadPoolExecutor(max_workers=10),
+        options=(
+            ('grpc.max_receive_message_length', -1),
+            ('grpc.max_send_message_length', -1),
+        )
+    )
     converter_pb2_grpc.add_ConverterServicer_to_server(ConverterService(), server)
-    server.add_insecure_port('[::]:8999')
+
+    target = "[::]:8999"
+    server.add_insecure_port(target)
     server.start()
+    print("server at ", target)
     server.wait_for_termination()
 
 
