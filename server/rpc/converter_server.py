@@ -1,6 +1,4 @@
-# python -m pip install grpcio grpcio-tools
-# python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/converter.proto
-
+import zipfile
 from concurrent import futures
 import grpc
 import logging
@@ -11,7 +9,11 @@ import converter_pb2_grpc
 
 class ConverterService(converter_pb2_grpc.ConverterServicer):
     def convertToGltf(self, request, context):
-        print("type is ", request.type, "file is", request.file)
+        upload_file = 'upload.tmp'
+        with open(upload_file, 'wb') as f:
+            f.write(request.file)
+        is_zip = zipfile.is_zipfile(upload_file)
+        print("receive and handle ", request.type, is_zip)
         return converter_pb2.convertResp(file=request.file)
 
 

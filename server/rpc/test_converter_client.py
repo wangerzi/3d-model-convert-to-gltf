@@ -1,6 +1,7 @@
 import grpc
 import converter_pb2_grpc
 import converter_pb2
+import os
 
 
 def get_stub(target):
@@ -12,10 +13,12 @@ def get_stub(target):
     return stub
 
 
-def convert_file_and_save(target, t, source, dist):
+def convert_file_and_save(target, t, source, dist, is_bin=False):
     stub = get_stub(target)
     with open(source, 'rb') as f:
-        response = stub.convertToGltf(converter_pb2.convertReq(type=t, file=f.read()))
+        response = stub.convertToGltf(
+            converter_pb2.convertReq(type=t, isBin=is_bin, file=f.read())
+        )
 
         with open(dist, 'wb') as d:
             d.write(response.file)
@@ -24,7 +27,7 @@ def convert_file_and_save(target, t, source, dist):
 
 
 def run():
-    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../assets/test.stl', 'test.stl.glb'):
+    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../assets/test.zip', 'test.glb.zip', True):
         print("convert success")
     else:
         print("convert failed")
