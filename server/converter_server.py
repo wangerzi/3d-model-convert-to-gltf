@@ -1,19 +1,27 @@
-import zipfile
-from concurrent import futures
-import grpc
 import logging
+import sys
+from concurrent import futures
 
+import grpc
+
+# from rpc import converter_pb2
+# from rpc import converter_pb2_grpc
+from service import upload
+
+sys.path.append('./rpc')
 import converter_pb2
 import converter_pb2_grpc
 
 
 class ConverterService(converter_pb2_grpc.ConverterServicer):
     def convertToGltf(self, request, context):
-        upload_file = 'upload.tmp'
-        with open(upload_file, 'wb') as f:
-            f.write(request.file)
-        is_zip = zipfile.is_zipfile(upload_file)
-        print("receive and handle ", request.type, is_zip)
+        try:
+            service = upload.Upload()
+            service.save(request.file)
+            print("receive and handle ", request.type, service.get_save_path(), service.is_zip())
+            # service.clear_source_file()
+        finally:
+            service.clear_save_dir()
         return converter_pb2.convertResp(file=request.file)
 
 
