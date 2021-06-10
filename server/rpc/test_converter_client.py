@@ -27,7 +27,7 @@ def convert_file_and_save(target, t, source, dist, is_bin=False):
 
 
 def run():
-    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../assets/test.zip', 'test.glb.zip', True):
+    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../assets/test.stl', 'test.glb.zip', True):
         print("convert success")
     else:
         print("convert failed")

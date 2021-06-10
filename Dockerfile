@@ -25,4 +25,4 @@ COPY . /opt/3d-model-convert-to-gltf
 RUN cd /opt/3d-model-convert-to-gltf && \
     conda run -n pythonocc pip install -r server/requirements.txt
 WORKDIR /opt/3d-model-convert-to-gltf
-# CMD ['python', '/opt/3d-model-convert-to-gltf/server/main.py']
+CMD ['python', '/opt/3d-model-convert-to-gltf/server/rpc_server.py']

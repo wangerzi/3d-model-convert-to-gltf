@@ -30,15 +30,24 @@ class Upload:
         os.makedirs(self.save_dir, exist_ok=True)
 
         # 1. save to temp file path
-        self.save_path = os.path.join(self.save_dir, 'upload.tmp')
+        self.save_path = os.path.join(self.save_dir, 'upload-' + str(random.randint(0, 10000)) + '.tmp')
         with open(self.save_path, 'wb') as f:
             f.write(file)
         self.zip = zipfile.is_zipfile(self.save_path)
 
         return self
 
+    def unzip_save_file_with_clear_source(self):
+        if self.is_zip():
+            self.unzip_save_file()
+            self.clear_source_file()
+        return self
+
     def unzip_save_file(self):
-        # todo:: unzip file to self.save_dir
+        # unzip self.save_path to self.save_dir
+        if self.is_zip():
+            with zipfile.ZipFile(self.save_path) as z:
+                z.extractall(self.save_dir)
         pass
 
     def clear_source_file(self):
@@ -47,4 +56,24 @@ class Upload:
         return self
 
     def clear_save_dir(self):
-        shutil.rmtree(self.save_dir)
+        if os.path.exists(self.save_path):
+            shutil.rmtree(self.save_dir)
+        return self
+
+    def scan_first_ext_file(self, ext=""):
+        if len(ext) <= 0:
+            return ""
+        ext = ext.lower()
+        files = self._save_dir_file_list()
+        for i in range(0, len(files)):
+            if files[i].lower().endswith("." + ext):
+                return files[i]
+        return ""
+
+    def _save_dir_file_list(self):
+        files = []
+        for f in os.listdir(self.save_dir):
+            print('file scan', f)
+            if not f in ['', '.', '..']:
+                files.append(os.path.join(self.save_dir, f))
+        return files
