@@ -24,6 +24,8 @@ def convert_file_and_save(target, t, source, dist, is_bin=False):
         response = stub.convertToGltf(
             converter_pb2.convertReq(type=t, isBin=is_bin, file=f.read())
         )
+        if response.file == b'':
+            return False
 
         with open(dist, 'wb') as d:
             d.write(response.file)
@@ -32,12 +34,15 @@ def convert_file_and_save(target, t, source, dist, is_bin=False):
 
 
 def run():
-    start_time = time.time()
-    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../../assets/test.stl', 'test.glb.zip', True):
-        end_time = time.time()
-        print("convert success", str(end_time - start_time), 's')
-    else:
-        print("convert failed")
+    try:
+        start_time = time.time()
+        if convert_file_and_save("127.0.0.1:8999", 'stl', '../../../assets/test.stl', 'test.glb.zip', True):
+            end_time = time.time()
+            print("convert success", str(end_time - start_time), 's')
+        else:
+            print("convert failed")
+    except Exception as err:
+        print("convert exception:", err)
 
 
 if __name__ == '__main__':

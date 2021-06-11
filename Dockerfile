@@ -1,6 +1,7 @@
-# docker build -t wj2015/3d-model-convert-to-gltf:v1.3
+# docker build . -t wj2015/3d-model-convert-to-gltf:v1.4
+# startup docker by: docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
 # you can debug by: docker run -it --rm -v `pwd`:/opt/3d-model-convert-to-gltf/ wj2015/3d-model-convert-to-gltf:latest /bin/bash
-# and run `conda activate pythonocc` to enter the environment.
+# you can also execute `conda activate pythonocc` to enter the environment.
 FROM continuumio/anaconda:2019.10
 LABEL maintainer=admin@wj2015.com
 
@@ -25,4 +26,4 @@ COPY . /opt/3d-model-convert-to-gltf
 RUN cd /opt/3d-model-convert-to-gltf && \
     conda run -n pythonocc pip install -r server/requirements.txt
 WORKDIR /opt/3d-model-convert-to-gltf
-CMD ['python', '/opt/3d-model-convert-to-gltf/server/rpc_server.py']
+CMD conda run -n pythonocc python /opt/3d-model-convert-to-gltf/server/rpc_server.py

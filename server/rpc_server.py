@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import time
 from concurrent import futures
 
 import grpc
@@ -29,7 +30,6 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
             model = Convert.ModelFactory.make_model(request.type)
             if up_service.is_zip():
                 model_ext = model.get_ext()
-                # todo:: we can more effective
                 find_path = up_service.scan_ext_file(model_ext, True)
                 if find_path and len(find_path) > 0:
                     # find first file
@@ -61,7 +61,7 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
 
 def serve():
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),
+        futures.ThreadPoolExecutor(max_workers=1),
         options=(
             ('grpc.max_receive_message_length', -1),
             ('grpc.max_send_message_length', -1),
@@ -69,7 +69,7 @@ def serve():
     )
     converter_pb2_grpc.add_ConverterServicer_to_server(ConverterService(), server)
 
-    target = "[::]:8999"
+    target = "0.0.0.0:8999"
     server.add_insecure_port(target)
     server.start()
     print("server at ", target)

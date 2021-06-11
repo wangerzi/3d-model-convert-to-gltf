@@ -4,7 +4,7 @@
 
 English|[中文](README_ZH.md)
 
-The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d class libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
+The main reason for this project is that I encountered a scenario where **the STEP and IGES models need to be displayed on the Web**, but the web3d  libraries on the market do not support this format, and the direct display of STL files uploaded by users will consume a lot of bandwidth or CDN Traffic, converted to compressed gltf would be more appropriate.
 
 Demo assets model effect compare:
 
@@ -23,7 +23,7 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 
 > PS: My blog is write by Chinese, if you are non-Chinese native speaker, you should take a Google Translate tool for well.
 
-**Project status:** maintain
+**Project status:** stable
 
 
 ## Mission
@@ -36,7 +36,23 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [x] write easy to use convert.sh
 - [x] online convert preview
 - [ ] [bug] stp convert to gltf is too large
-- [ ] grpc support
+- [x] grpc support
+- [ ] rpc should response error detail
+- [ ] rpc docker server logs output problems
+
+## Version update
+
+##### v1.4 2021-06-11 17:20
+
+Support GRPC, convert code refactor, fix bugs.
+
+##### v1.3 2020-06-24 17:19
+
+Add English document, fix bugs.
+
+##### v1.0 2020-05-21 19:08
+
+Basic commit, core feature complete, support shell convert.
 
 
 ## Why not assmip
@@ -45,11 +61,11 @@ I tried to use [assimp](https://github.com/assimp/assimp), but the result under 
 
 ## Why not implement API in this project
 
-Model conversion is a very performance-consuming and slow-speed service. The upload and download of the model will consume bandwidth. **If it is deployed directly on your own server, it will be a very bandwidth-intensive and CPU-consuming task**. For the most common method to upload and download large files is to **introduce OSS and CDN with dynamic expansion of queues and back-end services**, but the deployment cost and implementation cost will be relatively high, please contact admin@wj2015.com for business needs Commercial API support.
+Model conversion is a very performance-consuming and slow-speed service. The upload and download of the model will consume bandwidth. **If it is deployed directly on your own server, it will be a very bandwidth-intensive and CPU-consuming task**. For the most common method to upload and download large files is to **introduce OSS and CDN with dynamic expansion of queues and back-end services**, but the deployment cost and implementation cost will be relatively high.
 
 ## Quick Start
 
-Due to the trouble of environment configuration and other reasons, the command line mode **still needs to rely on docker**. **The command line mode is suitable for simple invocation on the server side.** The conversion process blocks the processes to be synchronized and cannot be deployed in a distributed manner to increase concurrency.
+Due to the trouble of environment configuration and other reasons, the command line mode **still needs to rely on docker**. **The command line mode is suitable for simple invocation on the server side.** The conversion process blocks the processes to be synchronized and cannot be deployed in a distributed manner to increase concurrency.The most recommended way is to use **grpc with docker** deployment to make rpc, which can be synchronous or asynchronous, and will be **easy to extend**.
 
 > PS：When there are too many simultaneous conversion models in the command line mode or a single model is too large, there is a risk that the server providing the web service is stuck
 
@@ -57,11 +73,31 @@ Due to the trouble of environment configuration and other reasons, the command l
 
 You can convert model online (<100MB) powered by [modelbox-sdk](https://github.com/wangerzi/modelbox-sdk)，preview link: [https://wangerzi.gitee.io/modelbox-sdk/examples/index.html](https://wangerzi.gitee.io/modelbox-sdk/examples/index.html)
 
+### GRPC Mode
+
+Based on GRPC, and it will be more convient to **build a dynamically expanded service cluster**, we support uploading zip/model source files, for the compatibility of each model, **response files are all in zip**, you need to decompress it after got it.
+
+You should run server-side rpc service by docker, please make sure 8999 port is usable and `wj2015/3d-model-convert-to-gltf:latest` image is up to date, command:
+
+```shell
+docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
+```
+
+When using grpc in this project, please copy  `server/rpc/protos/converter.proto` , and generate a code template according to the language of caller and enjoy it. Official document: [Support Language](https://grpc.io/docs/languages/)
+
+#### Completed examples
+
+If this project is helpful to you, you can commit another examples and PR, such as php/golang/Nodejs rpc call examples.
+
+| name                            | code                                 | comments         |
+| ------------------------------- | ------------------------------------ | ---------------- |
+| Python rpc client usage example | server/examples/python/rpc_client.py | convert and save |
+
 ### Command Mode
 
 Download the  `convert.sh`, and grant execution authority, execute the following command, the second param should choose in `stl|stp|iges|obj|fbx`, please determine according to the file type 
 
-> The script depends on the docker environment, so you should prepare the Docker environment first.
+> The script depends on the docker environment, so you should prepare the Docker environment first. **Command mode is not support zip file convert**, beacause docker volume will auto sync picture or mtl assets to docker container.
 
 ```shell
 convert.sh stl inputpath.stl outputpath.glb # convert to glb single bin file
