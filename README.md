@@ -131,7 +131,7 @@ if (file_exists($out)) {
 
 ### Docker Environment
 
-Under the docker host machine  is installed with docker, run the following command to pull the image (about 4G)
+Under the docker host machine installed with docker, run the following command to pull the image (about 4G)
 
 ```shell
 docker pull wj2015/3d-model-convert-to-gltf
