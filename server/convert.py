@@ -1,8 +1,11 @@
 import shutil
 import sys
 import os
+import sys
 
-import service.Convert as Convert
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+
+from service import Convert
 
 
 def main():

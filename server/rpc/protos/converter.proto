@@ -1,0 +1,17 @@
+// python -m pip install grpcio grpcio-tools
+// python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/converter.proto
+
+syntax = "proto3";
+
+service Converter {
+  rpc convertToGltf(convertReq) returns (convertResp) {}
+}
+
+message convertReq {
+  string type = 1;
+  bool isBin = 2;
+  bytes file = 3;
+}
+message convertResp {
+  bytes file = 1;
+}

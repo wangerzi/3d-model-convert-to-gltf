@@ -2,13 +2,12 @@
 version: '3'
 services:
   app:
-    image: wj2015/3d-model-convert-to-gltf
+    image: wj2015/3d-model-convert-to-gltf:v1.4
     container_name: 3d-model-convert-to-gltf-app
     volumes:
       - ../:/opt/3d-model-convert-to-gltf:cached
     privileged: true
+    ports:
+      - 8999:8999
     command:
-      'conda run -n pythonocc python server/main.py'
-  redis:
-    image: redis
-    container_name: 3d-model-convert-to-gltf-redis
+      'conda run --no-capture-output -n pythonocc python server/rpc_server.py > /dev/stdout'

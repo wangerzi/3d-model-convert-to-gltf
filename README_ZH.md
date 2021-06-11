@@ -1,5 +1,9 @@
 # 3DModelConvertToGltf 统一模型格式转换工具
 
+## 文档
+
+中文|[English](README.md)
+
 此项目产生的主要原因是工作中遇到了需要**在Web中展示 STEP 和 IGES 模型的场景**，但是市面上的web3d类库均不支持此格式，并且用户上传的STL文件直接展示会占用大量带宽或CDN流量，转换为压缩后的gltf会比较合适。
 
 样例文件压缩效果如下表：
@@ -17,11 +21,7 @@
 
 本项目即采用了博客中总结的思路：[STEP和IGES模型转换为适用Web的glb格式](https://blog.wj2015.com/2020/03/08/step%e5%92%8ciges%e6%a8%a1%e5%9e%8b%e8%bd%ac%e6%8d%a2%e4%b8%ba%e9%80%82%e7%94%a8web%e7%9a%84glb%e6%a0%bc%e5%bc%8f/)
 
-**项目状态：** 维护中
-
-## 文档
-
-中文|[English](README.md)
+**项目状态：** 稳定维护中
 
 ## 待完成任务
 
@@ -33,7 +33,23 @@
 - [x] 一键转换脚本封装
 - [x] 在线转换预览
 - [ ] [bug] stp 转 gltf 最终文件太大
-- [ ] 支持以 grpc 形式调用
+- [x] 支持以 grpc 形式调用
+- [ ] rpc 接口优化，返回具体的错误信息
+- [ ] rpc server 日志问题
+
+## 版本说明
+
+##### v1.4 2021-06-11 17:20
+
+更新了 GRPC 的支持，清理 aiohttp 和配置代码，重构了转换部分的代码并修复了 BUG
+
+##### v1.3 2020-06-24 17:19
+
+新增英文文档，修复 BUG，尝试 aiohttp 写接口
+
+##### v1.0 2020-05-21 19:08
+
+基础提交，基本功能开发完毕，支持脚本调用
 
 ## 为什么不用 assmip
 
@@ -45,7 +61,7 @@
 
 ## 快速上手
 
-由于环境配置麻烦等原因，命令行模式依旧需要依赖docker，**命令行模式适合服务端简单调用**，转换过程阻塞进程同步进行，无法分布式部署增加并发量等
+由于环境配置麻烦等原因，命令行模式依旧需要依赖docker，**命令行模式适合服务端简单调用**，转换过程阻塞进程同步进行，无法分布式部署增加并发量；最推荐的方式就是用 **grpc 配合容器化部署做调用**，可同步可异步，可方便的做扩展。
 
 > PS：命令行模式同步转换模型过多或者单个模型过大时，有把提供Web服务的服务器卡住的风险
 
@@ -53,11 +69,31 @@
 
 可以使用 [modelbox-sdk](https://github.com/wangerzi/modelbox-sdk) 在线转换模型(<100MB)，链接：[https://wangerzi.gitee.io/modelbox-sdk/examples/index.html](https://wangerzi.gitee.io/modelbox-sdk/examples/index.html)
 
+### GRPC 模式
+
+基于 GRPC 实现了服务内部的 RPC 通信，构建动态扩容的服务集群会更加方便，**支持上传 zip/模型源文件**，为各模型的兼容性考虑，**响应的文件都是 zip 格式的**，调用后需自行解压。
+
+首先需要**通过 docker 运行 RPC 服务端**，直接运行的指令如下，注意保证 8999 端口未被占用且 `wj2015/3d-model-convert-to-gltf:latest` 镜像最新
+
+```shell
+docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
+```
+
+使用时，请将 `server/rpc/protos/converter.proto` 复制出来，并根据调用方变成语言生成模板并使用，官方网址：[支持的语言](https://grpc.io/docs/languages/)
+
+#### 已实现示例
+
+如果本项目对您有帮助，您可继续补充其他示例并提交 PR，比如常见的 php 、 golang 、Nodejs 的调用示例
+
+| 示例名称        | 目录                                 | 备注           |
+| --------------- | ------------------------------------ | -------------- |
+| Python 调用示例 | server/examples/python/rpc_client.py | 调用封装和保存 |
+
 ### 命令行模式
 
 下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可，第二个参数可支持 `stl|stp|iges|obj|fbx`，根据文件类型而定。
 
-> 脚本依赖于docker环境，所以 Docker 环境先准备好吧。
+> 脚本依赖于docker环境，所以 Docker 环境先准备好吧，而且命令行依赖的是 docker 的 -v 映射本地目录从而将贴图和模型一起导入到容器中执行转换，所以**不接受压缩包**，请直接指定需要转换的模型文件。
 
 ```shell
 convert.sh stl inputpath.stl outputpath.glb # 生成二进制glb文件
@@ -92,25 +128,6 @@ if (file_exists($out)) {
 }
 ```
 
-## 配置说明
-
-下列为默认配置 `server/config/app.yaml` ，请按需更改，如果使用docker需要映射配置文件
-
-```yaml
-app:
-    # 保存临时文件（原模型文件）
-    save_upload_temp_file: 1
-    # 保存转换过程文件（模型格式转换文件）
-    save_convert_temp_file: 0
-    # 后台并发处理数量（仅api）
-    background_process_num: 3
-# 上传路径配置（仅 API）
-upload:
-    path: uploads/
-    # 单位： Mb
-    maxsize: 30
-```
-
 ### Docker运行
 
 在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
@@ -123,7 +140,7 @@ docker pull wj2015/3d-model-convert-to-gltf
 
 ### 简单负载示意图
 
-如果有多机负载的需求，可借助 nginx 的反向代理做一下简单的负载均衡或者辅助消息队列以及生产者消费者来做，HTTP 服务或队列部分需要自己实现逻辑。
+如果有**多机负载**的需求，可借助 nginx 的反向代理、微服务的服务注册和调用轮训来做简单的负载均衡，还可以辅助消息队列以及生产者消费者，**其中 grpc 已内置实现并支持容器化部署**，如需使用 HTTP 服务或队列需要自己实现逻辑。
 
 ![1583754967257](assets/1583754967257.png)
 
