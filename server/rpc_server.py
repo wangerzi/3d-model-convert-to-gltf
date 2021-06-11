@@ -1,10 +1,11 @@
 import logging
 import sys
+import os
 from concurrent import futures
 
 import grpc
 
-sys.path.append('./rpc')
+sys.path.append(os.path.join(os.path.dirname(__file__), 'rpc'))
 
 from rpc import converter_pb2
 from rpc import converter_pb2_grpc
@@ -34,8 +35,9 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
             else:
                 source_model_path = up_service.get_save_path()
 
+            # convert and clear source_model, then zip and response
             result = model.handler(source_model_path, request.isBin)
-            zip_path = up_service.zip_source_dir().get_source_zip_path()
+            zip_path = up_service.clear_file(source_model_path).zip_source_dir().get_source_zip_path()
 
             print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip(), 'convert result', result, 'zip path', zip_path)
 

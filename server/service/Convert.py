@@ -68,7 +68,7 @@ class StlModel(BaseModel):
             return stl_assume_bytes == os.path.getsize(path_to_stl)
 
     @staticmethod
-    def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False):
+    def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False, clear_convert_stl=False):
         # 1. convert binary stl to gltf
         if is_bin:
             convert_gltf_path = file_path + '.glb'
@@ -86,7 +86,8 @@ class StlModel(BaseModel):
         finally:
             if clear_stl_source:
                 StlModel.clear_file(file_path)
-            StlModel.clear_file(convert_stl_path)
+            if clear_convert_stl:
+                StlModel.clear_file(convert_stl_path)
             StlModel.clear_file(convert_gltf_path)
         return out_convert_gltf_path
 
@@ -94,12 +95,14 @@ class StlModel(BaseModel):
         super(StlModel, self).handler(file_path, is_bin)
         # read stl file, if not binary, convert to binary
         convert_stl_path = file_path + '.stl'
+        clear_convert_stl = False
         if not self.check_binary(file_path):
             shapes = read_stl_file(file_path)
             self.write_by_shapes(shapes, convert_stl_path)
+            clear_convert_stl = True
         else:
             convert_stl_path = file_path
-        return self.convert_to_draco_gltf(file_path, convert_stl_path, is_bin)
+        return self.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, False, clear_convert_stl)
 
 
 class StpModel(BaseModel):

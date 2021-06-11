@@ -55,8 +55,12 @@ class Upload:
         pass
 
     def clear_source_file(self):
-        if os.path.exists(self.save_path) and os.path.isfile(self.save_path):
-            os.remove(self.save_path)
+        self.clear_file(self.save_path)
+        return self
+
+    def clear_file(self, file_path):
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            os.remove(file_path)
         return self
 
     def clear_save_dir(self):
