@@ -1,8 +1,10 @@
 import shutil
 import sys
 import os
+import sys
+sys.path.append("./")
 
-import service.Convert as Convert
+from service import Convert
 
 
 def main():

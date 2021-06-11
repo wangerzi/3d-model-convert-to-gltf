@@ -33,7 +33,7 @@
 - [x] 一键转换脚本封装
 - [x] 在线转换预览
 - [ ] [bug] stp 转 gltf 最终文件太大
-- [ ] 支持以 grpc 形式调用
+- [x] 支持以 grpc 形式调用
 
 ## 为什么不用 assmip
 
@@ -57,7 +57,7 @@
 
 下载代码中的 `convert.sh`，赋予执行权限，执行如下指令即可，第二个参数可支持 `stl|stp|iges|obj|fbx`，根据文件类型而定。
 
-> 脚本依赖于docker环境，所以 Docker 环境先准备好吧。
+> 脚本依赖于docker环境，所以 Docker 环境先准备好吧，而且命令行依赖的是 docker 的 -v 映射本地目录从而将贴图和模型一起导入到容器中执行转换，所以不接受压缩包，请直接指定需要转换的模型文件。
 
 ```shell
 convert.sh stl inputpath.stl outputpath.glb # 生成二进制glb文件
@@ -92,25 +92,6 @@ if (file_exists($out)) {
 }
 ```
 
-## 配置说明
-
-下列为默认配置 `server/config/app.yaml` ，请按需更改，如果使用docker需要映射配置文件
-
-```yaml
-app:
-    # 保存临时文件（原模型文件）
-    save_upload_temp_file: 1
-    # 保存转换过程文件（模型格式转换文件）
-    save_convert_temp_file: 0
-    # 后台并发处理数量（仅api）
-    background_process_num: 3
-# 上传路径配置（仅 API）
-upload:
-    path: uploads/
-    # 单位： Mb
-    maxsize: 30
-```
-
 ### Docker运行
 
 在宿主机安装好 `docker` 的条件下，运行如下指令获取镜像（大约4G）
@@ -121,9 +102,12 @@ docker pull wj2015/3d-model-convert-to-gltf
 
 在容器内执行 `conda run -n pythonocc python convert.py stl input.stl out.glb` 可同步转换文件
 
+### GRPC 模式
+文档完善中，基于 GRPC 实现了服务内部的 RPC 通信，构建动态扩容的服务集群会更加方便，支持上传 zip/模型源文件，为各模型的兼容性考虑，响应的文件都是 zip 格式的，调用后需自行解压。
+
 ### 简单负载示意图
 
-如果有多机负载的需求，可借助 nginx 的反向代理做一下简单的负载均衡或者辅助消息队列以及生产者消费者来做，HTTP 服务或队列部分需要自己实现逻辑。
+如果有多机负载的需求，可借助 nginx 的反向代理做一下简单的负载均衡或者辅助消息队列以及生产者消费者来做，其中 grpc 已内置实现并支持容器化部署，如需使用 HTTP 服务或队列需要自己实现逻辑。
 
 ![1583754967257](assets/1583754967257.png)
 

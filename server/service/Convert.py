@@ -17,6 +17,7 @@ class BaseModel:
     def get_ext(self):
         return self.ext
 
+    @staticmethod
     def clear_file(*file_paths):
         for file_path in file_paths:
             if os.path.exists(file_path):
@@ -67,7 +68,7 @@ class StlModel(BaseModel):
             return stl_assume_bytes == os.path.getsize(path_to_stl)
 
     @staticmethod
-    def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False):
+    def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False):
         # 1. convert binary stl to gltf
         if is_bin:
             convert_gltf_path = file_path + '.glb'
@@ -83,8 +84,10 @@ class StlModel(BaseModel):
             if not gltf_pipeline(convert_gltf_path, out_convert_gltf_path):
                 raise ConvertException('gltf draco fail, file:' + convert_gltf_path)
         finally:
-            super().clear_file(file_path, convert_stl_path)
-            super().clear_file(convert_gltf_path)
+            if clear_stl_source:
+                StlModel.clear_file(file_path)
+            StlModel.clear_file(convert_stl_path)
+            StlModel.clear_file(convert_gltf_path)
         return out_convert_gltf_path
 
     def handler(self, file_path, is_bin=False):
@@ -111,7 +114,7 @@ class StpModel(BaseModel):
         try:
             shapes = read_step_file(file_path)
             StlModel.write_by_shapes(shapes, convert_stl_path)
-            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin)
+            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, True)
         finally:
             self.clear_file(convert_stl_path)
         return result
@@ -129,7 +132,7 @@ class IgesModel(BaseModel):
         try:
             shapes = read_iges_file(file_path)
             StlModel.write_by_shapes(shapes, convert_stl_path)
-            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin)
+            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, True)
         finally:
             self.clear_file(convert_stl_path)
         return result
