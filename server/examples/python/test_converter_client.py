@@ -1,7 +1,12 @@
+# python -m grpc_tools.protoc -I../../rpc/protos --python_out=. --grpc_python_out=. ../../rpc/protos/converter.proto
+import sys
 import grpc
+import os
+import time
+
+sys.path.append(os.path.dirname(__file__))
 import converter_pb2_grpc
 import converter_pb2
-import os
 
 
 def get_stub(target):
@@ -27,8 +32,10 @@ def convert_file_and_save(target, t, source, dist, is_bin=False):
 
 
 def run():
-    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../assets/test.stl', 'test.glb.zip', True):
-        print("convert success")
+    start_time = time.time()
+    if convert_file_and_save("127.0.0.1:8999", 'stl', '../../../assets/test.stl', 'test.glb.zip', True):
+        end_time = time.time()
+        print("convert success", str(end_time - start_time), 's')
     else:
         print("convert failed")
 

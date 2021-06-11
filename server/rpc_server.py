@@ -14,8 +14,12 @@ from service import Convert
 
 
 class ConverterService(converter_pb2_grpc.ConverterServicer):
+
     def convertToGltf(self, request, context):
         up_service = upload.Upload()
+
+        response = converter_pb2.convertResp(file=None)
+        print("receive request", request.type, request.isBin, ", size:", len(request.file) / 1024 / 1024, 'Mb')
         try:
             # save and unzip
             up_service.save(request.file).unzip_save_file_with_clear_source()
@@ -26,26 +30,33 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
             if up_service.is_zip():
                 model_ext = model.get_ext()
                 # todo:: we can more effective
-                for i in range(0, len(model_ext)):
-                    find_path = up_service.scan_first_ext_file(model_ext)
-                    if find_path:
-                        # find first file
-                        source_model_path = find_path
-                        break
+                find_path = up_service.scan_ext_file(model_ext, True)
+                if find_path and len(find_path) > 0:
+                    # find first file
+                    source_model_path = find_path[0]
             else:
                 source_model_path = up_service.get_save_path()
 
             # convert and clear source_model, then zip and response
             result = model.handler(source_model_path, request.isBin)
-            zip_path = up_service.clear_file(source_model_path).zip_source_dir().get_source_zip_path()
 
-            print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip(), 'convert result', result, 'zip path', zip_path)
+            # special logic, if convert to glb, only zip glb file
+            zip_source_ext = None
+            if request.isBin:
+                zip_source_ext = ['glb']
+            zip_path = up_service.clear_file(source_model_path).zip_source_dir(zip_source_ext).get_source_zip_path()
 
-            with open(zip_path) as f:
-                return converter_pb2.convertResp(file=f.read())
+            print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip(),
+                  'found source file', source_model_path, 'convert result', result, 'zip path', zip_path, "zip size:",
+                  os.path.getsize(zip_path) / 1024 / 1024, "Mb")
+
+            with open(zip_path, 'rb') as f:
+                response = converter_pb2.convertResp(file=f.read())
+        except Exception as err:
+            print("convert error:", err)
         finally:
             up_service.clear_save_dir()
-            return converter_pb2.convertResp(file=None)
+            return response
 
 
 def serve():

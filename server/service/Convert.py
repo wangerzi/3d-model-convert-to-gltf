@@ -69,6 +69,7 @@ class StlModel(BaseModel):
 
     @staticmethod
     def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False, clear_convert_stl=False):
+        # todo:: remove too many flag
         # 1. convert binary stl to gltf
         if is_bin:
             convert_gltf_path = file_path + '.glb'
@@ -126,7 +127,7 @@ class StpModel(BaseModel):
 class IgesModel(BaseModel):
     def __init__(self):
         super(IgesModel, self).__init__()
-        self.ext = ['stp', 'step']
+        self.ext = ['igs', 'iges']
 
     def handler(self, file_path, is_bin):
         super(IgesModel, self).handler(file_path, is_bin)
@@ -144,7 +145,7 @@ class IgesModel(BaseModel):
 class ObjModel(BaseModel):
     def __init__(self):
         super(ObjModel, self).__init__()
-        self.ext = ['stp', 'step']
+        self.ext = ['obj']
 
     def handler(self, file_path, is_bin):
         super(ObjModel, self).handler(file_path, is_bin)
@@ -160,7 +161,7 @@ class ObjModel(BaseModel):
 class FbxModel(BaseModel):
     def __init__(self):
         super(FbxModel, self).__init__()
-        self.ext = ['stp', 'step']
+        self.ext = ['fbx']
 
     def handler(self, file_path, is_bin):
         super(FbxModel, self).handler(file_path, is_bin)

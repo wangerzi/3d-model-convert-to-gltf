@@ -64,35 +64,59 @@ class Upload:
         return self
 
     def clear_save_dir(self):
-        if os.path.exists(self.save_path):
+        if os.path.exists(self.save_dir):
             shutil.rmtree(self.save_dir)
         return self
 
-    def zip_source_dir(self):
+    def zip_source_dir(self, ext=None):
+        if ext is None:
+            ext = []
         if os.path.isdir(self.save_dir):
-            files = self._save_dir_file_list()
+            if len(ext):
+                files = []
+                files.extend(self.scan_ext_file(ext, False))
+            else:
+                files = self._save_dir_file_list()
             zip_path = os.path.join(self.save_dir, 'zip-temp-' + str(random.randint(0, 10000)) + '.zip')
 
             with zipfile.ZipFile(zip_path, 'w') as z:
                 for i in range(0, len(files)):
-                    z.write(files[i])
+                    z.write(files[i], files[i].replace(self.save_dir, '', 1))
             self.source_zip_path = zip_path
         return self
 
-    def scan_first_ext_file(self, ext=""):
-        if len(ext) <= 0:
-            return ""
-        ext = ext.lower()
+    def scan_ext_file(self, exts=None, only_first=False):
+        if exts is None:
+            exts = []
+        if len(exts) <= 0:
+            return []
         files = self._save_dir_file_list()
+        result = []
         for i in range(0, len(files)):
-            if files[i].lower().endswith("." + ext):
-                return files[i]
-        return ""
+            for j in range(0, len(exts)):
+                ext = exts[j]
+                ext = ext.lower()
+                if files[i].lower().endswith("." + ext):
+                    if only_first:
+                        return [files[i]]
+                    else:
+                        result.append(files[i])
+        return result
 
-    def _save_dir_file_list(self):
+    def _save_dir_file_list(self, origin_path=None):
+        if origin_path is None:
+            origin_path = self.save_dir
         files = []
-        for f in os.listdir(self.save_dir):
-            print('file scan', f)
-            if not f in ['', '.', '..']:
-                files.append(os.path.join(self.save_dir, f))
+        # BFS to avoid __MACOSX/xxx.obj problem
+        dirs = []
+        for f in os.listdir(origin_path):
+            if f not in ['', '.', '..']:
+                tmp_path = os.path.join(origin_path, f)
+                if os.path.isdir(tmp_path):
+                    dirs.append(tmp_path)
+                else:
+                    files.append(tmp_path)
+
+        for i in range(0, len(dirs)):
+            files.extend(self._save_dir_file_list(dirs[i]))
         return files
