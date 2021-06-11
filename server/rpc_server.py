@@ -35,12 +35,15 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
                 source_model_path = up_service.get_save_path()
 
             result = model.handler(source_model_path, request.isBin)
-            # todo:: zip file and response
+            zip_path = up_service.zip_source_dir().get_source_zip_path()
 
-            print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip())
+            print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip(), 'convert result', result, 'zip path', zip_path)
+
+            with open(zip_path) as f:
+                return converter_pb2.convertResp(file=f.read())
         finally:
             up_service.clear_save_dir()
-        return converter_pb2.convertResp(file=request.file)
+            return converter_pb2.convertResp(file=None)
 
 
 def serve():

@@ -10,10 +10,14 @@ class Upload:
         self.base_dir = base_dir
         self.save_dir = ''
         self.save_path = ''
+        self.source_zip_path = ''
         self.zip = False
 
     def is_zip(self):
         return self.zip
+
+    def get_source_zip_path(self):
+        return self.source_zip_path
 
     def get_base_dir(self):
         return self.base_dir
@@ -24,7 +28,7 @@ class Upload:
     def get_save_path(self):
         return self.save_path
 
-    def save(self, file: bytes):
+    def save(self, file_bytes):
         # pre: generate save dir and save path
         self.save_dir = os.path.join(self.base_dir, str(time.time()) + '.' + str(random.randint(0, 10000)))
         os.makedirs(self.save_dir, exist_ok=True)
@@ -32,7 +36,7 @@ class Upload:
         # 1. save to temp file path
         self.save_path = os.path.join(self.save_dir, 'upload-' + str(random.randint(0, 10000)) + '.tmp')
         with open(self.save_path, 'wb') as f:
-            f.write(file)
+            f.write(file_bytes)
         self.zip = zipfile.is_zipfile(self.save_path)
 
         return self
@@ -58,6 +62,17 @@ class Upload:
     def clear_save_dir(self):
         if os.path.exists(self.save_path):
             shutil.rmtree(self.save_dir)
+        return self
+
+    def zip_source_dir(self):
+        if os.path.isdir(self.save_dir):
+            files = self._save_dir_file_list()
+            zip_path = os.path.join(self.save_dir, 'zip-temp-' + str(random.randint(0, 10000)) + '.zip')
+
+            with zipfile.ZipFile(zip_path, 'w') as z:
+                for i in range(0, len(files)):
+                    z.write(files[i])
+            self.source_zip_path = zip_path
         return self
 
     def scan_first_ext_file(self, ext=""):
