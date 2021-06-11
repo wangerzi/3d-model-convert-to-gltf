@@ -76,7 +76,8 @@
 首先需要**通过 docker 运行 RPC 服务端**，直接运行的指令如下，注意保证 8999 端口未被占用且 `wj2015/3d-model-convert-to-gltf:latest` 镜像最新
 
 ```shell
-docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
+$ docker pull wj2015/3d-model-convert-to-gltf:latest
+$ docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
 ```
 
 使用时，请将 `server/rpc/protos/converter.proto` 复制出来，并根据调用方变成语言生成模板并使用，官方网址：[支持的语言](https://grpc.io/docs/languages/)
@@ -199,7 +200,7 @@ pip install -r server/requirements.txt
 
 本地的 node 版本需要是 `12.0.0`，否则 `gltf-pipeline` 无法运行，需要安装 `gltf-pipeline` 和 `obj2gltf` 两个 npm 包。
 
-#### 本地调试环境安装指引
+#### 原始调试环境安装指引
 可以使用如下指令安装 `nvm`（MacOs or Linux），Windows需下载可执行文件 [https://github.com/coreybutler/nvm-windows](https://github.com/coreybutler/nvm-windows)
 ```shell script
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash

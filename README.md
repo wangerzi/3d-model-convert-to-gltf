@@ -80,7 +80,8 @@ Based on GRPC, and it will be more convient to **build a dynamically expanded se
 You should run server-side rpc service by docker, please make sure 8999 port is usable and `wj2015/3d-model-convert-to-gltf:latest` image is up to date, command:
 
 ```shell
-docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
+$ docker pull wj2015/3d-model-convert-to-gltf:latest
+$ docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
 ```
 
 When using grpc in this project, please copy  `server/rpc/protos/converter.proto` , and generate a code template according to the language of caller and enjoy it. Official document: [Support Language](https://grpc.io/docs/languages/)
@@ -138,28 +139,9 @@ docker pull wj2015/3d-model-convert-to-gltf
 
 Inside the container  and execute `conda run -n pythonocc python convert.py [stl|step|iges|obj|fbx] input.stl out.glb` can convert model synchronous.
 
-## Config file introduce
-
-It's the default config at `server/config/app.yaml`, you can modify it as appropriate, if you use the docker you should use volumnes to replace it
-
-```yaml
-app:
-    # don't delete origin model file (origin model file)
-    save_upload_temp_file: 1
-    # set 1 means don't delete convert temp file
-    save_convert_temp_file: 0
-    # background process num (only api)
-    background_process_num: 3
-# upload path and size (only api)
-upload:
-    path: uploads/
-    # unit of storage: Mb
-    maxsize: 30
-```
-
 ### Simple Load Diagram
 
-If there is a demand for multi-machine load, you can use nginx's reverse proxy to do a simple load balancing, or use message queue with producer and consumer. The HTTP API or queue needs to implement your own logic.
+If there is a demand for multi-machine load, you can use nginx proxy / docker container with rpc to do a simple load balancing, or use message queue with producer and consumer. The HTTP API or queue needs to implement your own logic.
 
 ![1583754967257](assets/1583754967257.png)
 
@@ -186,13 +168,12 @@ Attaching to 3d-model-convert-to-gltf-redis, 3d-model-convert-to-gltf-app
 
 If there are port conflicts, initialization failures and other abnormal situations, please check  and search the information according to the error information.
 
-Create a new terminal, execute `docker ps` for this current execute docker containers, the execute result is as follows to indicate success
+Create a new terminal, execute `docker ps` for this current execute docker containers, the execution result is as follows to indicate success
 
 ```shell
 user@MacBook-Pro 3d-model-convert-to-gltf % docker ps
 CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS               NAMES
 69b684ed7755        wj2015/3d-model-convert-to-gltf   "conda run -n python…"   3 seconds ago       Up 2 seconds                            3d-model-convert-to-gltf-app
-20eb8ede5da7        redis                             "docker-entrypoint.s…"   2 hours ago         Up 2 seconds        6379/tcp            3d-model-convert-to-gltf-redis
 ```
 
 Next, enter the container to execute the command and enter the `pythonocc` conda environment. Executing the script in this environment can facilitate code changes and debugging

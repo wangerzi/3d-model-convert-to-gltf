@@ -10,4 +10,4 @@ services:
     ports:
       - 8999:8999
     command:
-      'conda run --no-capture-output -n pythonocc python server/rpc_server.py > /dev/stdout'
+      'conda run --no-capture-output -n pythonocc python server/rpc_server.py'
