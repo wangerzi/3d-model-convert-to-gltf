@@ -10,7 +10,7 @@ idna==2.9
 multidict==4.7.6
 OCC==7.4.0rc1
 protobuf==3.17.1
-Pygments==2.7.1
+Pygments==2.7.4
 six==1.12.0
 watchgod==0.6
 yarl==1.4.2
