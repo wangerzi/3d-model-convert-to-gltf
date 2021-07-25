@@ -26,7 +26,7 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 **Project status:** stable
 
 
-## Mission
+## Features
 
 - [x] Basic project structure planning and interface design
 - [x] Conversion and compression code implementation
@@ -38,7 +38,15 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [ ] [bug] stp convert to gltf is too large
 - [x] grpc support
 - [ ] rpc should response error detail
-- [ ] rpc docker server logs output problems
+- [ ] rpc api should support no draco
+- [ ] [bug] rpc docker server logs output problems
+
+
+## Using this project
+
+- Lexcent 3D Printing
+  > You can scan this following qrcode by Wechat, it's helpful for 3d printing and preview everywhere.
+  ![img](./assets/using/lixian.jpg)
 
 ## Version update
 
