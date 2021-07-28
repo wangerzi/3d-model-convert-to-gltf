@@ -23,7 +23,7 @@ class BaseModel:
             if os.path.exists(file_path):
                 os.unlink(file_path)
 
-    def handler(self, file_path, is_bin):
+    def handler(self, file_path, is_bin, need_draco):
         if not file_path:
             raise ConvertException("convert file can't be empty")
         if not (os.path.exists(file_path) and os.path.isfile(file_path)):
@@ -68,32 +68,44 @@ class StlModel(BaseModel):
             return stl_assume_bytes == os.path.getsize(path_to_stl)
 
     @staticmethod
-    def convert_to_draco_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False, clear_convert_stl=False):
+    def convert_stl_to_gltf(file_path, convert_stl_path, is_bin=False, clear_stl_source=False, clear_convert_stl=False,
+                            need_draco=True):
         # todo:: remove too many flag
         # 1. convert binary stl to gltf
         if is_bin:
             convert_gltf_path = file_path + '.glb'
-            out_convert_gltf_path = file_path + '.zip' + '.glb'
+            # for draco
+            dist_convert_gltf_path = file_path + '.draco' + '.glb'
             stl_to_gltf(convert_stl_path, convert_gltf_path, is_bin)
+            convert_gltf_bin_path = ""
         else:
-            convert_gltf_path = file_path + '.gltf'
-            output_path = os.path.dirname(convert_gltf_path)
-            out_convert_gltf_path = os.path.join(output_path, 'out.gltf')
+            output_path = os.path.dirname(file_path)
+            # for draco
             stl_to_gltf(convert_stl_path, output_path, is_bin)
+            dist_convert_gltf_path = file_path + '.gltf'
+            convert_gltf_path = os.path.join(output_path, 'out.gltf')
+            convert_gltf_bin_path = os.path.join(output_path, 'out.bin')
         # 2. gltf-pipeline
-        try:
-            if not gltf_pipeline(convert_gltf_path, out_convert_gltf_path):
-                raise ConvertException('gltf draco fail, file:' + convert_gltf_path)
-        finally:
-            if clear_stl_source:
-                StlModel.clear_file(file_path)
-            if clear_convert_stl:
-                StlModel.clear_file(convert_stl_path)
-            StlModel.clear_file(convert_gltf_path)
-        return out_convert_gltf_path
+        if need_draco:
+            try:
+                if not gltf_pipeline(convert_gltf_path, dist_convert_gltf_path, is_bin):
+                    raise ConvertException('gltf draco fail, file:' + convert_gltf_path)
+            finally:
+                StlModel.clear_file(convert_gltf_path)
+                if convert_gltf_bin_path:
+                    StlModel.clear_file(convert_gltf_bin_path)
+        else:
+            # no draco no out_convert_gltf_path
+            dist_convert_gltf_path = convert_gltf_path
 
-    def handler(self, file_path, is_bin=False):
-        super(StlModel, self).handler(file_path, is_bin)
+        if clear_stl_source:
+            StlModel.clear_file(file_path)
+        if clear_convert_stl:
+            StlModel.clear_file(convert_stl_path)
+        return dist_convert_gltf_path
+
+    def handler(self, file_path, is_bin=False, need_draco=True):
+        super(StlModel, self).handler(file_path, is_bin, need_draco)
         # read stl file, if not binary, convert to binary
         convert_stl_path = file_path + '.stl'
         clear_convert_stl = False
@@ -103,7 +115,7 @@ class StlModel(BaseModel):
             clear_convert_stl = True
         else:
             convert_stl_path = file_path
-        return self.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, False, clear_convert_stl)
+        return self.convert_stl_to_gltf(file_path, convert_stl_path, is_bin, False, clear_convert_stl, need_draco)
 
 
 class StpModel(BaseModel):
@@ -111,14 +123,14 @@ class StpModel(BaseModel):
         super(StpModel, self).__init__()
         self.ext = ['stp', 'step']
 
-    def handler(self, file_path, is_bin):
-        super(StpModel, self).handler(file_path, is_bin)
+    def handler(self, file_path, is_bin, need_draco):
+        super(StpModel, self).handler(file_path, is_bin, need_draco)
         # read stp file and convert to stl
         convert_stl_path = file_path + '.stl'
         try:
             shapes = read_step_file(file_path)
             StlModel.write_by_shapes(shapes, convert_stl_path)
-            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, True)
+            result = StlModel.convert_stl_to_gltf(file_path, convert_stl_path, is_bin, True, True, need_draco)
         finally:
             self.clear_file(convert_stl_path)
         return result
@@ -129,14 +141,14 @@ class IgesModel(BaseModel):
         super(IgesModel, self).__init__()
         self.ext = ['igs', 'iges']
 
-    def handler(self, file_path, is_bin):
-        super(IgesModel, self).handler(file_path, is_bin)
+    def handler(self, file_path, is_bin, need_draco):
+        super(IgesModel, self).handler(file_path, is_bin, need_draco)
         # read iges file and convert to stl
         convert_stl_path = file_path + '.stl'
         try:
             shapes = read_iges_file(file_path)
             StlModel.write_by_shapes(shapes, convert_stl_path)
-            result = StlModel.convert_to_draco_gltf(file_path, convert_stl_path, is_bin, True)
+            result = StlModel.convert_stl_to_gltf(file_path, convert_stl_path, is_bin, True, True, need_draco)
         finally:
             self.clear_file(convert_stl_path)
         return result
@@ -147,13 +159,13 @@ class ObjModel(BaseModel):
         super(ObjModel, self).__init__()
         self.ext = ['obj']
 
-    def handler(self, file_path, is_bin):
-        super(ObjModel, self).handler(file_path, is_bin)
+    def handler(self, file_path, is_bin, need_draco):
+        super(ObjModel, self).handler(file_path, is_bin, need_draco)
         if is_bin:
             convert_gltf_path = file_path + '.glb'
         else:
             convert_gltf_path = file_path + '.gltf'
-        if not obj2gltf(file_path, convert_gltf_path, is_bin):
+        if not obj2gltf(file_path, convert_gltf_path, is_bin, need_draco):
             raise ConvertException('obj convert draco gltf fail, file:' + convert_gltf_path)
         return convert_gltf_path
 
@@ -163,14 +175,14 @@ class FbxModel(BaseModel):
         super(FbxModel, self).__init__()
         self.ext = ['fbx']
 
-    def handler(self, file_path, is_bin):
-        super(FbxModel, self).handler(file_path, is_bin)
+    def handler(self, file_path, is_bin, need_draco):
+        super(FbxModel, self).handler(file_path, is_bin, need_draco)
         if is_bin:
             convert_gltf_path = file_path + '.glb'
         else:
             convert_gltf_path = file_path + '.gltf'
 
-        if not fbx2gltf(file_path, convert_gltf_path, is_bin):
+        if not fbx2gltf(file_path, convert_gltf_path, is_bin, need_draco):
             raise ConvertException('fbx convert draco gltf fail, file:' + convert_gltf_path)
         return convert_gltf_path
 

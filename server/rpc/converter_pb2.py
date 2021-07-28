@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0f\x63onverter.proto\"7\n\nconvertReq\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\r\n\x05isBin\x18\x02 \x01(\x08\x12\x0c\n\x04\x66ile\x18\x03 \x01(\x0c\"\x1b\n\x0b\x63onvertResp\x12\x0c\n\x04\x66ile\x18\x01 \x01(\x0c\x32\x39\n\tConverter\x12,\n\rconvertToGltf\x12\x0b.convertReq\x1a\x0c.convertResp\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0f\x63onverter.proto\"Y\n\nconvertReq\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\r\n\x05isBin\x18\x02 \x01(\x08\x12\x0c\n\x04\x66ile\x18\x03 \x01(\x0c\x12\x11\n\tneedDraco\x18\x04 \x01(\x08\x12\r\n\x05noZip\x18\x05 \x01(\x08\"\x1b\n\x0b\x63onvertResp\x12\x0c\n\x04\x66ile\x18\x01 \x01(\x0c\x32\x39\n\tConverter\x12,\n\rconvertToGltf\x12\x0b.convertReq\x1a\x0c.convertResp\"\x00\x62\x06proto3'
 )
 
 
@@ -54,6 +54,20 @@ _CONVERTREQ = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='needDraco', full_name='convertReq.needDraco', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='noZip', full_name='convertReq.noZip', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -67,7 +81,7 @@ _CONVERTREQ = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=19,
-  serialized_end=74,
+  serialized_end=108,
 )
 
 
@@ -98,8 +112,8 @@ _CONVERTRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=76,
-  serialized_end=103,
+  serialized_start=110,
+  serialized_end=137,
 )
 
 DESCRIPTOR.message_types_by_name['convertReq'] = _CONVERTREQ
@@ -129,8 +143,8 @@ _CONVERTER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=105,
-  serialized_end=162,
+  serialized_start=139,
+  serialized_end=196,
   methods=[
   _descriptor.MethodDescriptor(
     name='convertToGltf',

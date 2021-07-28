@@ -12,6 +12,7 @@ from rpc import converter_pb2
 from rpc import converter_pb2_grpc
 from service import upload
 from service import Convert
+from exception.ConvertException import ConvertException
 
 
 class ConverterService(converter_pb2_grpc.ConverterServicer):
@@ -20,7 +21,8 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
         up_service = upload.Upload()
 
         response = converter_pb2.convertResp(file=None)
-        print("receive request", request.type, request.isBin, ", size:", len(request.file) / 1024 / 1024, 'Mb')
+        print("receive request", request.type, request.isBin, ", need_draco: ", request.needDraco, ", no_zip: ",
+              request.noZip, " size:", len(request.file) / 1024 / 1024, 'Mb')
         try:
             # save and unzip
             up_service.save(request.file).unzip_save_file_with_clear_source()
@@ -34,26 +36,42 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
                 if find_path and len(find_path) > 0:
                     # find first file
                     source_model_path = find_path[0]
+                else:
+                    raise ConvertException("can't found match source model")
+
             else:
                 source_model_path = up_service.get_save_path()
 
             # convert and clear source_model, then zip and response
-            result = model.handler(source_model_path, request.isBin)
+            result = model.handler(source_model_path, request.isBin, request.needDraco)
 
             # special logic, if convert to glb, only zip glb file
             zip_source_ext = None
             if request.isBin:
                 zip_source_ext = ['glb']
-            zip_path = up_service.clear_file(source_model_path).zip_source_dir(zip_source_ext).get_source_zip_path()
+
+            if request.isBin and request.noZip:
+                up_service.clear_file(source_model_path)
+                find_path = up_service.scan_ext_file(['glb'], True)
+                if find_path and len(find_path) > 0:
+                    result_file_path = find_path[0]
+                else:
+                    raise ConvertException("can't found glb result file")
+            else:
+                result_file_path = up_service.clear_file(source_model_path).zip_source_dir(
+                    zip_source_ext).get_source_zip_path()
 
             print("receive and handle ", request.type, up_service.get_save_path(), up_service.is_zip(),
-                  'found source file', source_model_path, 'convert result', result, 'zip path', zip_path, "zip size:",
-                  os.path.getsize(zip_path) / 1024 / 1024, "Mb")
+                  'found source file', source_model_path, 'convert result', result, 'result path', result_file_path,
+                  "zip size:",
+                  ((os.path.getsize(result_file_path) / 1024 / 1024) if os.path.exists(result_file_path) else 'None'),
+                  "Mb")
 
-            with open(zip_path, 'rb') as f:
+            with open(result_file_path, 'rb') as f:
                 response = converter_pb2.convertResp(file=f.read())
         except Exception as err:
             print("convert error:", err)
+            raise err
         finally:
             up_service.clear_save_dir()
             return response

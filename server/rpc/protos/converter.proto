@@ -11,6 +11,8 @@ message convertReq {
   string type = 1;
   bool isBin = 2;
   bytes file = 3;
+  bool needDraco = 4;
+  bool noZip = 5;
 }
 message convertResp {
   bytes file = 1;

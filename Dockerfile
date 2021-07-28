@@ -1,4 +1,4 @@
-# docker build . -t wj2015/3d-model-convert-to-gltf:v1.4
+# docker build . -t wj2015/3d-model-convert-to-gltf:v1.5
 # startup docker by: docker run -d -p 8999:8999 wj2015/3d-model-convert-to-gltf:latest
 # you can debug by: docker run -it --rm -v `pwd`:/opt/3d-model-convert-to-gltf/ wj2015/3d-model-convert-to-gltf:latest /bin/bash
 # you can also execute `conda activate pythonocc` to enter the environment.
