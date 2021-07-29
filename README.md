@@ -36,6 +36,7 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [x] write easy to use convert.sh
 - [x] online convert preview
 - [ ] [bug] stp convert to gltf is too large
+- [ ] [bug] stl/stp/igs convert to gltf node missing
 - [x] grpc support
 - [ ] rpc should response error detail
 - [ ] rpc api should support no draco

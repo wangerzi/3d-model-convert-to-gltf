@@ -33,10 +33,11 @@
 - [x] 一键转换脚本封装
 - [x] 在线转换预览
 - [ ] [bug] stp 转 gltf 最终文件太大
+- [ ] [bug] stl/stp/igs 转 gltf 节点信息丢失
 - [x] 支持以 grpc 形式调用
 - [ ] rpc 接口优化，返回具体的错误信息
 - [ ] rpc 需支持不适用 draco
-- [ ] [bug]rpc server 日志问题
+- [ ] [bug] rpc server 日志问题
 
 
 ## 项目用户
