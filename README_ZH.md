@@ -33,6 +33,8 @@
 - [x] 一键转换脚本封装
 - [x] 在线转换预览
 - [ ] [bug] stp 转 gltf 最终文件太大
+- [x] [bug] stl 转 gltf 丢失节点信息 (原因： stl 格式本身就没有节点， [https://en.wikipedia.org/wiki/STL_(file_format)](https://en.wikipedia.org/wiki/STL_(file_format)))
+- [ ] [bug] stp/iges 转 gltf 丢失节点信息
 - [x] 支持以 grpc 形式调用
 - [ ] rpc 接口优化，返回具体的错误信息
 - [ ] rpc 需支持不适用 draco
