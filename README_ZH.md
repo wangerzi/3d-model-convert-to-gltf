@@ -38,7 +38,7 @@
 - [x] 支持以 grpc 形式调用
 - [ ] rpc 接口优化，返回具体的错误信息
 - [ ] rpc 需支持不适用 draco
-- [ ] [bug]rpc server 日志问题
+- [ ] [bug] rpc server 日志问题
 
 
 ## 项目用户
