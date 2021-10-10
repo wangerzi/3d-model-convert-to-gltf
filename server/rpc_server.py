@@ -1,7 +1,6 @@
 import logging
 import sys
 import os
-import time
 from concurrent import futures
 
 import grpc
@@ -71,7 +70,6 @@ class ConverterService(converter_pb2_grpc.ConverterServicer):
                 response = converter_pb2.convertResp(file=f.read())
         except Exception as err:
             print("convert error:", err)
-            raise err
         finally:
             up_service.clear_save_dir()
             return response

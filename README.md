@@ -40,7 +40,7 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 - [ ] [bug] stp/iges convert to gltf missing node
 - [x] grpc support
 - [ ] rpc should response error detail
-- [ ] rpc api should support no draco
+- [x] rpc api should support no draco
 - [ ] [bug] rpc docker server logs output problems
 
 
@@ -51,6 +51,14 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
   ![img](./assets/using/lixian.jpg)
 
 ## Version update
+
+##### v1.6 2021-10-10 13:08
+
+Smaller docker images, from 4.42GB to 1.87GB, fix docker can't running problems.
+
+##### v1.5 2021-07-25 16:06
+
+Fix some bugs, support no draco convert
 
 ##### v1.4 2021-06-11 17:20
 
