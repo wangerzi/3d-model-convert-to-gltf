@@ -2,7 +2,7 @@
 version: '3'
 services:
   app:
-    image: wj2015/3d-model-convert-to-gltf:v1.4
+    image: wj2015/3d-model-convert-to-gltf:v1.6
     container_name: 3d-model-convert-to-gltf-app
     volumes:
       - ../:/opt/3d-model-convert-to-gltf:cached
