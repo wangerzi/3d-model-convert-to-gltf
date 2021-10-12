@@ -1,5 +1,6 @@
-# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.gltf
-# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.glb
+# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.gltf no-draco
+# convert.sh [stl|stp|iges|obj|fbx] inputpath.stl outputpath.glb no-draco
+# no-draco is option
 inputPath=$(
   cd "$(dirname "$2")"
   pwd
@@ -10,4 +11,4 @@ outPath=$(
   pwd
 )
 outFile=$outPath/`basename $3`
-docker run -v $inputPath:$inputPath -v $outPath:$outPath wj2015/3d-model-convert-to-gltf:v1.6 /bin/bash -c "cd $inputPath && conda run -n pythonocc python /opt/3d-model-convert-to-gltf/server/convert.py $1 $inputFile $outFile"
+docker run -v $inputPath:$inputPath -v $outPath:$outPath wj2015/3d-model-convert-to-gltf:v1.6 /bin/bash -c "cd $inputPath && conda run -n pythonocc python /opt/3d-model-convert-to-gltf/server/convert.py $1 $inputFile $outFile $4"

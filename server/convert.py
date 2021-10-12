@@ -1,5 +1,4 @@
 import shutil
-import sys
 import os
 import sys
 
@@ -14,10 +13,13 @@ def main():
         return False
 
     is_bin = True
+    need_draco = True
     if len(sys.argv) > 3 and sys.argv[3][-4:] == 'gltf':
         is_bin = False
+    if len(sys.argv) > 4 and sys.argv[4] == 'no-draco':
+        need_draco = False
 
-    out_convert_gltf_path = Convert.convert_by_type(sys.argv[1], os.path.abspath(sys.argv[2]), is_bin)
+    out_convert_gltf_path = Convert.convert_by_type(sys.argv[1], os.path.abspath(sys.argv[2]), is_bin, need_draco)
 
     if len(sys.argv) > 3:
         out_file_path = sys.argv[3]

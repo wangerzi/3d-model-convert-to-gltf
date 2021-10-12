@@ -204,7 +204,7 @@ class ModelFactory:
             raise ConvertException(file_type + ' model is not support')
 
 
-def convert_by_type(file_type, file_path, is_bin=False):
+def convert_by_type(file_type, file_path, is_bin=False, need_draco=True):
     file_type = file_type.lower()
     # 1. check file_type
     if file_type not in ['stl', 'stp', 'iges', 'obj', 'fbx']:
@@ -216,7 +216,7 @@ def convert_by_type(file_type, file_path, is_bin=False):
     # 2. file_type to handler
     model = ModelFactory.make_model(file_type)
 
-    result = model.handler(file_path, is_bin)
+    result = model.handler(file_path, is_bin, need_draco)
     return result
 
 # ########## model convert end

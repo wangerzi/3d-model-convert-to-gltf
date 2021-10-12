@@ -52,6 +52,10 @@ I organized my thoughts into a blog: [STEP and IGES models are converted to the 
 
 ## Version update
 
+##### v1.7 pre release
+
+convert.sh support no-draco option
+
 ##### v1.6 2021-10-10 13:08
 
 Smaller docker images, from 4.42GB to 1.87GB, fix docker can't running problems.
