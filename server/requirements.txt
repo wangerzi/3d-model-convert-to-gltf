@@ -9,7 +9,7 @@ grpcio-tools==1.38.0
 idna==2.9
 multidict==4.7.6
 OCC==7.4.0rc1
-protobuf==3.17.1
+protobuf==3.18.3
 Pygments==2.7.4
 six==1.12.0
 watchgod==0.6
